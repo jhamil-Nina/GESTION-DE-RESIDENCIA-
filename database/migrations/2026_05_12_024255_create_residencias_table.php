@@ -16,8 +16,6 @@ return new class extends Migration
 
             $table->string('direccion');
 
-            $table->string('telefono')->nullable();
-
             $table->integer('capacidad');
 
             $table->timestamps();

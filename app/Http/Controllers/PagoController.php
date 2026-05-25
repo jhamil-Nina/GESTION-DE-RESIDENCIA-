@@ -3,63 +3,112 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pago;
+use App\Models\RegistroResidencia;
 use Illuminate\Http\Request;
 
 class PagoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    // LISTAR
+    public function index(Request $request)
     {
-        //
+        $buscar = $request->buscar;
+
+        $pagos = Pago::with('registroResidencia.user', 'registroResidencia.habitacion')
+
+            ->when($buscar, function ($query, $buscar) {
+
+                $query->where('metodo_pago', 'like', "%{$buscar}%")
+                    ->orWhere('estado', 'like', "%{$buscar}%")
+                    ->orWhere('monto', 'like', "%{$buscar}%")
+                    ->orWhere('id', $buscar);
+            })
+
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return view('pagos.index', compact('pagos', 'buscar'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+
+    // FORM CREAR
     public function create()
     {
-        //
+        $registros = RegistroResidencia::with('user', 'habitacion')->get();
+
+        return view('pagos.create', compact('registros'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
+    // GUARDAR
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'registro_residencia_id' => 'required|exists:registro_residencias,id',
+            'monto' => 'required|numeric|min:0',
+            'fecha_pago' => 'required|date',
+            'metodo_pago' => 'required|string|max:50',
+            'estado' => 'required|string|max:20'
+        ]);
+
+        Pago::create($request->all());
+
+        return redirect()
+            ->route('pagos.index')
+            ->with('success', 'Pago registrado correctamente');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Pago $pago)
+
+    // MOSTRAR
+    public function show(string $id)
     {
-        //
+        $pago = Pago::with('registroResidencia.user', 'registroResidencia.habitacion')
+            ->findOrFail($id);
+
+        return view('pagos.show', compact('pago'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Pago $pago)
+
+    // FORM EDITAR
+    public function edit(string $id)
     {
-        //
+        $pago = Pago::findOrFail($id);
+
+        $registros = RegistroResidencia::with('user', 'habitacion')->get();
+
+        return view('pagos.edit', compact('pago', 'registros'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Pago $pago)
+
+    // ACTUALIZAR
+    public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'registro_residencia_id' => 'required|exists:registro_residencias,id',
+            'monto' => 'required|numeric|min:0',
+            'fecha_pago' => 'required|date',
+            'metodo_pago' => 'required|string|max:50',
+            'estado' => 'required|string|max:20'
+        ]);
+
+        $pago = Pago::findOrFail($id);
+
+        $pago->update($request->all());
+
+        return redirect()
+            ->route('pagos.index')
+            ->with('success', 'Pago actualizado correctamente');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Pago $pago)
+
+    // ELIMINAR
+    public function destroy(string $id)
     {
-        //
+        $pago = Pago::findOrFail($id);
+
+        $pago->delete();
+
+        return redirect()
+            ->route('pagos.index')
+            ->with('success', 'Pago eliminado correctamente');
     }
 }

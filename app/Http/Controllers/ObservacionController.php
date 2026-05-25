@@ -3,63 +3,118 @@
 namespace App\Http\Controllers;
 
 use App\Models\Observacion;
+use App\Models\RegistroResidencia;
 use Illuminate\Http\Request;
 
 class ObservacionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+
+    // LISTAR
+    public function index(Request $request)
     {
-        //
+        $buscar = $request->buscar;
+
+        $observaciones = Observacion::with('registroResidencia.user')
+
+            ->when($buscar, function ($query, $buscar) {
+
+                $query->where('descripcion', 'like', "%{$buscar}%")
+                    ->orWhere('id', $buscar);
+            })
+
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return view('observacions.index', compact('observaciones', 'buscar'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+
+
+    // FORMULARIO CREAR
     public function create()
     {
-        //
+        $registros = RegistroResidencia::with('user')->get();
+
+        return view('observacions.create', compact('registros'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
+
+    // GUARDAR
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'registro_residencia_id' => 'required|exists:registro_residencias,id',
+            'descripcion' => 'required|string',
+            'fecha' => 'required|date'
+        ]);
+
+        Observacion::create([
+            'registro_residencia_id' => $request->registro_residencia_id,
+            'descripcion' => $request->descripcion,
+            'fecha' => $request->fecha
+        ]);
+
+        return redirect()->route('observacions.index')
+            ->with('success', 'Observación registrada correctamente');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Observacion $observacion)
+
+
+    // MOSTRAR
+    public function show($id)
     {
-        //
+        $observacion = Observacion::with('registroResidencia.user')
+            ->findOrFail($id);
+
+        return view('observacions.show', compact('observacion'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Observacion $observacion)
+
+
+    // FORMULARIO EDITAR
+    public function edit($id)
     {
-        //
+        $observacion = Observacion::findOrFail($id);
+
+        $registros = RegistroResidencia::with('user')->get();
+
+        return view('observacions.edit', compact('observacion', 'registros'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Observacion $observacion)
+
+
+    // ACTUALIZAR
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'registro_residencia_id' => 'required|exists:registro_residencias,id',
+            'descripcion' => 'required|string',
+            'fecha' => 'required|date'
+        ]);
+
+        $observacion = Observacion::findOrFail($id);
+
+        $observacion->update([
+            'registro_residencia_id' => $request->registro_residencia_id,
+            'descripcion' => $request->descripcion,
+            'fecha' => $request->fecha
+        ]);
+
+        return redirect()->route('observacions.index')
+            ->with('success', 'Observación actualizada correctamente');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Observacion $observacion)
+
+
+    // ELIMINAR
+    public function destroy($id)
     {
-        //
+        $observacion = Observacion::findOrFail($id);
+
+        $observacion->delete();
+
+        return redirect()->route('observacions.index')
+            ->with('success', 'Observación eliminada correctamente');
     }
 }

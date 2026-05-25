@@ -3,63 +3,87 @@
 namespace App\Http\Controllers;
 
 use App\Models\Antecedente;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AntecedenteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    // LISTAR
+    public function index(Request $request)
     {
-        //
+        $buscar = $request->buscar;
+
+        $antecedentes = Antecedente::with('user')
+
+            ->when($buscar, function ($query, $buscar) {
+                $query->where('descripcion', 'like', "%{$buscar}%")
+                    ->orWhere('id', $buscar);
+            })
+
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return view('antecedentes.index', compact('antecedentes', 'buscar'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    // FORMULARIO CREAR
     public function create()
     {
-        //
+        $users = User::all();
+
+        return view('antecedentes.create', compact('users'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // GUARDAR
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'user_id' => 'required',
+            'descripcion' => 'required',
+            'fecha' => 'required|date'
+        ]);
+
+        Antecedente::create($request->all());
+
+        return redirect()->route('antecedentes.index')
+            ->with('success', 'Antecedente registrado correctamente');
     }
 
-    /**
-     * Display the specified resource.
-     */
+    // VER
     public function show(Antecedente $antecedente)
     {
-        //
+        return view('antecedentes.show', compact('antecedente'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    // FORM EDITAR
     public function edit(Antecedente $antecedente)
     {
-        //
+        $users = User::all();
+
+        return view('antecedentes.edit', compact('antecedente', 'users'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    // ACTUALIZAR
     public function update(Request $request, Antecedente $antecedente)
     {
-        //
+        $request->validate([
+            'user_id' => 'required',
+            'descripcion' => 'required',
+            'fecha' => 'required|date'
+        ]);
+
+        $antecedente->update($request->all());
+
+        return redirect()->route('antecedentes.index')
+            ->with('success', 'Antecedente actualizado correctamente');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    // ELIMINAR
     public function destroy(Antecedente $antecedente)
     {
-        //
+        $antecedente->delete();
+
+        return redirect()->route('antecedentes.index')
+            ->with('success', 'Antecedente eliminado correctamente');
     }
 }

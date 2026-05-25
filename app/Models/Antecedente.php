@@ -6,5 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Antecedente extends Model
 {
-    //
+    protected $fillable = [
+        'user_id',
+        'descripcion',
+        'fecha'
+    ];
+
+    // RELACION
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
