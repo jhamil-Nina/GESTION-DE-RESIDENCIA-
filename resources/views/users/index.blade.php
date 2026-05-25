@@ -8,7 +8,7 @@
     <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-6 rounded-t-xl text-white">
 
         <h2 class="text-2xl font-bold flex items-center gap-2">
-            👤 Lista de Usuarios
+            👤 Lista de Usuarios Emi
         </h2>
 
         <p class="text-sm opacity-90">
