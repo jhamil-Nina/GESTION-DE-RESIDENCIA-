@@ -111,4 +111,4 @@ class PagoController extends Controller
             ->route('pagos.index')
             ->with('success', 'Pago eliminado correctamente');
     }
-}
+} 

@@ -151,3 +151,4 @@ class HabitacionController extends Controller
             ->with('success', 'Habitación eliminada correctamente');
     }
 }
+ 

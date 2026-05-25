@@ -120,3 +120,4 @@ class ResidenciaController extends Controller
             ->with('success', 'Residencia eliminada correctamente');
     }
 }
+ 

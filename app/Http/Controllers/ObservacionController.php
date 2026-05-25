@@ -117,4 +117,4 @@ class ObservacionController extends Controller
         return redirect()->route('observacions.index')
             ->with('success', 'Observación eliminada correctamente');
     }
-}
+} 

@@ -35,4 +35,4 @@ class DashboardController extends Controller
             'categorias'
         ));
     }
-}
+} 

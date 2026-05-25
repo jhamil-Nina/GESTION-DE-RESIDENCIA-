@@ -1,92 +1,62 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route; // permite crear rutas en Laravel
+use App\Http\Controllers\ProfileController; // controlador del perfil (Breeze)
 
 // CONTROLADORES DEL CRUD
-use App\Http\Controllers\CategoriaOcupacionController;
-use App\Http\Controllers\ResidenciaController;
-use App\Http\Controllers\HabitacionController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\RegistroResidenciaController;
-use App\Http\Controllers\ObservacionController;
-use App\Http\Controllers\PagoController;
-use App\Http\Controllers\AntecedenteController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CategoriaOcupacionController; // controlador de categorias
+use App\Http\Controllers\ResidenciaController; // controlador de residencias
+use App\Http\Controllers\HabitacionController; // controlador de habitaciones
+use App\Http\Controllers\UserController; // controlador de usuarios
+use App\Http\Controllers\RegistroResidenciaController; // controlador de registros de residencia
+use App\Http\Controllers\ObservacionController; // controlador de observaciones
+use App\Http\Controllers\PagoController; // controlador de pagos
+use App\Http\Controllers\AntecedenteController; // controlador de antecedentes
+use App\Http\Controllers\DashboardController; // controlador del dashboard
 
 // RUTAS WEB
 
 Route::get('/', function () {
-
-    return view('welcome');
+    return view('welcome'); // muestra la vista welcome.blade.php
 });
 
 
-// CRUD DE CATEGORIA OCUPACION
-Route::resource(
-    'categoria_ocupacions',
-    CategoriaOcupacionController::class
-);
+//CRUD DE CATEGORIA OCUPACION
 
+Route::resource('categoria_ocupacions', CategoriaOcupacionController::class);
 
-// CRUD DE RESIDENCIA
-Route::resource(
-    'residencias',
-    ResidenciaController::class
-);
+//CRUD DE RESIDENCIA
 
+Route::resource('residencias', ResidenciaController::class);
 
-// CRUD DE HABITACION
-Route::resource(
-    'habitacions',
-    HabitacionController::class
-);
+//CRUD DE HABITACION
 
+Route::resource('habitacions', HabitacionController::class);
 
 // CRUD DE USERS
-Route::resource(
-    'users',
-    UserController::class
-);
 
+Route::resource('users', UserController::class);
 
 // CRUD DE REGISTRO RESIDENCIA
-Route::resource(
-    'registro_residencias',
-    RegistroResidenciaController::class
-);
-
+Route::resource('registro_residencias', RegistroResidenciaController::class);
 
 // CRUD DE OBSERVACIONES
-Route::resource(
-    'observacions',
-    ObservacionController::class
-);
-
+Route::resource('observacions', ObservacionController::class);
 
 // CRUD DE PAGOS
-Route::resource(
-    'pagos',
-    PagoController::class
-);
-
+Route::resource('pagos', PagoController::class);
 
 // CRUD DE ANTECEDENTES
-Route::resource(
-    'antecedentes',
-    AntecedenteController::class
-);
+Route::resource('antecedentes', AntecedenteController::class);
 
+//DASHBOARD PANEL PRINCIPAL
 
-// DASHBOARD PANEL PRINCIPAL
 Route::get('/dashboard', [DashboardController::class, 'index'])
-
     ->middleware(['auth', 'verified'])
-
     ->name('dashboard');
 
+//RUTAS PROTEGIDAS POR AUTENTICACION DEL LOGIN
 
-// RUTAS PROTEGIDAS POR AUTENTICACION
 Route::middleware('auth')->group(function () {
 
     // editar perfil
@@ -102,6 +72,6 @@ Route::middleware('auth')->group(function () {
         ->name('profile.destroy');
 });
 
+//RUTAS DE AUTENTICACION (REGISTRO, LOGIN, ETC) - PROPORCIONADAS POR BREEZE
 
-// RUTAS DE AUTENTICACION DE BREEZE
 require __DIR__ . '/auth.php';

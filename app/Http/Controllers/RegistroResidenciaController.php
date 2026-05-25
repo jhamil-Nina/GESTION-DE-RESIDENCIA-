@@ -152,3 +152,4 @@ class RegistroResidenciaController extends Controller
             ->with('success', 'Registro eliminado correctamente');
     }
 }
+ 

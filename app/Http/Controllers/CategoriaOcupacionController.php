@@ -33,7 +33,7 @@ class CategoriaOcupacionController extends Controller
         return view('categoria_ocupacions.create');
     }
 
-
+    // GUARDAR
     public function store(Request $request)
     {
         // VALIDACION
@@ -92,4 +92,4 @@ class CategoriaOcupacionController extends Controller
         return redirect()->route('categoria_ocupacions.index')
             ->with('success', 'Categoria eliminada');
     }
-}
+} 

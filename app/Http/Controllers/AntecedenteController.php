@@ -85,5 +85,5 @@ class AntecedenteController extends Controller
 
         return redirect()->route('antecedentes.index')
             ->with('success', 'Antecedente eliminado correctamente');
-    }
+    } 
 }
