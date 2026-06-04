@@ -197,7 +197,7 @@
                             <!-- ELIMINAR -->
                             <form action="{{ route('pagos.destroy', $ultimoPago->id) }}"
                                 method="POST">
-                                class="inline">
+                            
 
                                 @csrf
                                 @method('DELETE')

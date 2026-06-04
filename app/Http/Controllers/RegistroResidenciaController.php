@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\Habitacion;
 use App\Models\CategoriaOcupacion;
 use App\Models\Antecedente;
+use App\Models\Residencia;
+
 
 class RegistroResidenciaController extends Controller
 {
@@ -44,10 +46,15 @@ class RegistroResidenciaController extends Controller
     {
         $users = User::with('categoriaOcupacion')->get();
 
-        $habitacions = Habitacion::all();
+        $residencias = Residencia::all();
+
+        $habitacions = Habitacion::with('residencia')
+            ->where('estado', 'Disponible')
+            ->get();
 
         return view('registro_residencias.create', compact(
             'users',
+            'residencias',
             'habitacions'
         ));
     }
@@ -65,21 +72,93 @@ class RegistroResidenciaController extends Controller
             'fecha_salida' => 'nullable|date'
         ]);
 
-        // Verificar si el usuario tiene antecedentes
-        $tieneAntecedente = Antecedente::where('user_id', $request->user_id)->exists();
+        // Verificar antecedentes
+        $tieneAntecedente = Antecedente::where(
+            'user_id',
+            $request->user_id
+        )->exists();
 
         if ($tieneAntecedente) {
+
             return redirect()
                 ->back()
-                ->with('error', 'Este residente tiene antecedentes y no puede registrarse.');
+                ->withInput()
+                ->with(
+                    'error',
+                    'Este residente tiene antecedentes y no puede registrarse.'
+                );
         }
 
-        // Registrar solo si no tiene antecedentes
+        // Buscar habitación
+        $habitacion = Habitacion::findOrFail(
+            $request->habitacion_id
+        );
+
+        // Contar ocupantes actuales
+        $ocupantesActuales = RegistroResidencia::where(
+            'habitacion_id',
+            $habitacion->id
+        )
+            ->where(function ($query) {
+                $query->whereNull('fecha_salida')
+                    ->orWhere('fecha_salida', '>=', now()->toDateString());
+            })
+            ->count();
+
+        // PRUEBA
+        dd(
+            $habitacion->id,
+            $habitacion->numero,
+            $habitacion->capacidad,
+            $ocupantesActuales
+        );
+
+        // Validar capacidad
+        if ($ocupantesActuales >= $habitacion->capacidad) {
+
+            $habitacion->estado = 'Ocupada';
+            $habitacion->save();
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'La habitación ya alcanzó su capacidad máxima.'
+                );
+        }
+
+        // Crear registro
         RegistroResidencia::create($request->all());
+
+        // Volver a contar después de registrar
+        $ocupantesActuales = RegistroResidencia::where(
+            'habitacion_id',
+            $habitacion->id
+        )
+            ->where(function ($query) {
+                $query->whereNull('fecha_salida')
+                    ->orWhere('fecha_salida', '>=', now()->toDateString());
+            })
+            ->count();
+
+        // Actualizar estado
+        if ($ocupantesActuales >= $habitacion->capacidad) {
+
+            $habitacion->estado = 'Ocupada';
+        } else {
+
+            $habitacion->estado = 'Disponible';
+        }
+
+        $habitacion->save();
 
         return redirect()
             ->route('registro_residencias.index')
-            ->with('success', 'Registro creado correctamente');
+            ->with(
+                'success',
+                'Registro creado correctamente.'
+            );
     }
 
     /**

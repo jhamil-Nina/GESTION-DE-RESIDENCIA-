@@ -15,24 +15,50 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // TARJETAS PRINCIPALES
         $usuarios = User::count();
         $habitaciones = Habitacion::count();
-        $residencias = Residencia::count();
         $registros = RegistroResidencia::count();
         $pagos = Pago::count();
-        $observaciones = Observacion::count();
-        $antecedentes = Antecedente::count();
-        $categorias = CategoriaOcupacion::count();
+
+        // OCUPACIÓN
+        $habitacionesOcupadas = Habitacion::where('estado', 'Ocupada')
+            ->count();
+
+        $habitacionesDisponibles = Habitacion::where('estado', 'Disponible')
+            ->count();
+
+        $porcentajeOcupacion = $habitaciones > 0
+            ? round(($habitacionesOcupadas / $habitaciones) * 100)
+            : 0;
+
+        // ÚLTIMOS INGRESOS
+        $ultimosIngresos = RegistroResidencia::with([
+            'user',
+            'habitacion'
+        ])
+            ->latest()
+            ->take(5)
+            ->get();
+
+        // ÚLTIMOS PAGOS
+        $ultimosPagos = Pago::with([
+            'registroResidencia.user'
+        ])
+            ->latest()
+            ->take(5)
+            ->get();
 
         return view('dashboard', compact(
             'usuarios',
             'habitaciones',
-            'residencias',
             'registros',
             'pagos',
-            'observaciones',
-            'antecedentes',
-            'categorias'
+            'habitacionesOcupadas',
+            'habitacionesDisponibles',
+            'porcentajeOcupacion',
+            'ultimosIngresos',
+            'ultimosPagos'
         ));
     }
-} 
+}

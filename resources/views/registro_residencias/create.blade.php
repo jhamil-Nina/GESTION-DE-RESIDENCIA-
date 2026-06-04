@@ -44,6 +44,32 @@
 
             </div>
 
+            <div class="mb-4">
+
+                <label class="font-semibold block mb-2">
+                    Residencia
+                </label>
+
+                <select
+                    id="residencia_id"
+                    class="w-full border rounded-lg px-4 py-2">
+
+                    <option value="">
+                        Seleccione una residencia
+                    </option>
+
+                    @foreach($residencias as $residencia)
+
+                    <option value="{{ $residencia->id }}">
+                        {{ $residencia->nombre }}
+                    </option>
+
+                    @endforeach
+
+                </select>
+
+            </div>
+
 
             <!-- HABITACION -->
             <div class="mb-4">
@@ -56,8 +82,12 @@
 
                     @foreach($habitacions as $habitacion)
 
-                    <option value="{{ $habitacion->id }}">
+                    <option
+                        value="{{ $habitacion->id }}"
+                        data-residencia="{{ $habitacion->residencia_id }}">
+
                         Habitación {{ $habitacion->numero }}
+
                     </option>
 
                     @endforeach
@@ -166,6 +196,32 @@
 
         });
 
+    });
+</script>
+
+<script>
+    const residencia =
+        document.getElementById('residencia_id');
+
+    const habitaciones =
+        document.querySelector('[name="habitacion_id"]');
+
+    residencia.addEventListener('change', function() {
+
+        const residenciaSeleccionada = this.value;
+
+        Array.from(habitaciones.options).forEach(opcion => {
+
+            if (opcion.value === '') {
+                opcion.hidden = false;
+                return;
+            }
+
+            opcion.hidden =
+                opcion.dataset.residencia !== residenciaSeleccionada;
+        });
+
+        habitaciones.value = '';
     });
 </script>
 
