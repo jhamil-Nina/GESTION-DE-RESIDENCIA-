@@ -41,3 +41,4 @@ class RegistroResidencia extends Model
         return $this->hasMany(Observacion::class);
     }
 }
+ 

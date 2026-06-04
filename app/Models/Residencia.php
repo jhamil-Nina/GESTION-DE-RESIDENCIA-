@@ -19,4 +19,4 @@ class Residencia extends Model
     {
         return $this->hasMany(Habitacion::class);
     }
-}
+} 

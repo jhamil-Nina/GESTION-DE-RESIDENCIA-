@@ -18,6 +18,7 @@ class User extends Authenticatable
         'telefono',
         'direccion',
         'categoria_ocupacion_id',
+        'rol',
         'password',
     ];
 
@@ -51,3 +52,4 @@ class User extends Authenticatable
         return $this->hasMany(Antecedente::class);
     }
 }
+ 

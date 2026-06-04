@@ -66,126 +66,157 @@
         </div>
 
 
-        <!-- TABLA -->
-        <table class="w-full border rounded-lg overflow-hidden">
+        @forelse($residencias as $residencia)
 
-            <thead class="bg-gray-100">
+        <div class="mb-8 border rounded-xl overflow-hidden shadow-sm">
 
-                <tr>
+            <!-- CABECERA -->
+            <div class="bg-indigo-100 px-6 py-4 flex justify-between items-center">
 
-                    <th class="text-left px-4 py-3">ID</th>
+                <h3 class="text-xl font-bold text-indigo-700">
+                     {{ $residencia->nombre }}
+                </h3>
 
-                    <th class="text-left px-4 py-3">
-                        Número
-                    </th>
+                <span class="bg-indigo-600 text-white px-3 py-1 rounded-full text-sm">
+                    {{ $residencia->habitacions->count() }} habitaciones
+                </span>
 
-                    <th class="text-center px-4 py-3">
-                        Capacidad
-                    </th>
+            </div>
 
-                    <th class="text-left px-4 py-3">
-                        Residencia
-                    </th>
+            @if($residencia->habitacions->count())
 
-                    <th class="text-center px-4 py-3">
-                        Acciones
-                    </th>
+            <table class="w-full">
 
-                </tr>
+                <thead class="bg-gray-50">
 
-            </thead>
+                    <tr>
+                        <th class="px-4 py-3 text-left">Número</th>
+                        <th class="px-4 py-3 text-center">Capacidad</th>
+                        <th class="px-4 py-3 text-center">Costo</th>
+                        <th class="px-4 py-3 text-center">Estado</th>
+                        <th class="px-4 py-3 text-center">Acciones</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach($residencia->habitacions as $habitacion)
+
+                    <tr class="border-t hover:bg-gray-50">
+
+                        <td class="px-4 py-3">
+                            {{ $habitacion->numero }}
+                        </td>
+
+                        <td class="px-4 py-3 text-center">
+                            {{ $habitacion->capacidad }}
+                        </td>
+
+                        <td class="px-4 py-3 text-center">
+                            Bs {{ number_format($habitacion->costo_mensual, 2) }}
+                        </td>
+
+                        <td class="px-4 py-3 text-center">
+
+                            @if($habitacion->estado == 'Disponible')
+
+                            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
+                                Disponible
+                            </span>
+
+                            @elseif($habitacion->estado == 'Ocupada')
+
+                            <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm">
+                                Ocupada
+                            </span>
+
+                            @else
+
+                            <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm">
+                                Mantenimiento
+                            </span>
+
+                            @endif
+
+                        </td>
+
+                        <td class="px-4 py-3">
+
+                            <div class="flex flex-wrap justify-center items-center gap-2">
+
+                                <a href="{{ route('habitacions.show', $habitacion->id) }}"
+                                    class="w-24 h-10 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg">
+                                    Ver
+                                </a>
+
+                                <a href="{{ route('habitacions.edit', $habitacion->id) }}"
+                                    class="w-24 h-10 flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg">
+                                    Editar
+                                </a>
+
+                                <form
+                                    action="{{ route('habitacions.destroy', $habitacion->id) }}"
+                                    method="POST">
+
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button
+                                        type="submit"
+                                        onclick="return confirm('¿Seguro que deseas eliminar esta habitación?')"
+                                        class="w-24 h-10 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg">
+
+                                        Eliminar
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    @endforeach
+
+                </tbody>
+
+            </table>
+
+            @else
+
+            <div class="p-6 text-center text-gray-500">
+                No hay habitaciones registradas en esta residencia.
+            </div>
+
+            @endif
+
+        </div>
+
+        @empty
+
+        <div class="text-center py-8 text-gray-500">
+            No existen residencias registradas.
+        </div>
+
+        @endforelse
 
 
-            <tbody>
-
-                @forelse($habitacions as $habitacion)
-
-                <tr class="border-t hover:bg-gray-50">
-
-                    <td class="px-4 py-3">
-                        {{ $habitacion->id }}
-                    </td>
-
-                    <td class="px-4 py-3">
-                        Habitación {{ $habitacion->numero }}
-                    </td>
-
-                    <td class="px-4 py-3 text-center">
-                        {{ $habitacion->capacidad }}
-                    </td>
-
-                    <td class="px-4 py-3">
-                        {{ $habitacion->residencia->nombre }}
-                    </td>
-
-                    <td class="px-4 py-3">
-
-                        <div class="flex justify-center items-center gap-2">
-
-                            <!-- VER -->
-                            <a href="{{ route('habitacions.show', $habitacion->id) }}"
-                                class="w-24 text-center bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg shadow">
-
-                                Ver
-
-                            </a>
-
-                            <!-- EDITAR -->
-                            <a href="{{ route('habitacions.edit', $habitacion->id) }}"
-                                class="w-24 text-center bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded-lg shadow">
-
-                                Editar
-
-                            </a>
-
-                            <!-- ELIMINAR -->
-                            <form
-                                action="{{ route('habitacions.destroy', $habitacion->id) }}"
-                                method="POST">
-
-                                @csrf
-                                @method('DELETE')
-
-                                <button
-                                    type="submit"
-                                    onclick="return confirm('¿Seguro que deseas eliminar esta habitación?')"
-                                    class="w-24 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg shadow">
-
-                                    Eliminar
-
-                                </button>
-
-                            </form>
-
-                        </div>
-
-                    </td>
-
-                </tr>
-
-                @empty
-
-                <tr>
-
-                    <td colspan="5" class="text-center py-6 text-gray-500">
-
-                        No hay habitaciones registradas
-
-                    </td>
-
-                </tr>
-
-                @endforelse
-
-            </tbody>
-
-        </table>
+        @php
+        $totalHabitaciones = $residencias->sum(function($residencia){
+        return $residencia->habitacions->count();
+        });
+        @endphp
 
 
         <!-- FOOTER -->
+
         <div class="mt-4 text-sm text-gray-500">
 
-            Mostrando {{ $habitacions->count() }} habitaciones
+            Mostrando {{ $totalHabitaciones }} habitaciones en
+            {{ $residencias->count() }} residencias
 
         </div>
 

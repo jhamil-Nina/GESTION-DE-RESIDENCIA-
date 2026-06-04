@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route; // permite crear rutas en Laravel
 use App\Http\Controllers\ProfileController; // controlador del perfil (Breeze)
-
+  
 // CONTROLADORES DEL CRUD
 use App\Http\Controllers\CategoriaOcupacionController; // controlador de categorias
 use App\Http\Controllers\ResidenciaController; // controlador de residencias

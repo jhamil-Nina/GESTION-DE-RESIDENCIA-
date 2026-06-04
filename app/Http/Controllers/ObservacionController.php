@@ -62,7 +62,7 @@ class ObservacionController extends Controller
 
 
     // MOSTRAR
-    public function show($id)
+    public function show(int $id)
     {
         $observacion = Observacion::with('registroResidencia.user')
             ->findOrFail($id);
@@ -73,7 +73,7 @@ class ObservacionController extends Controller
 
 
     // FORMULARIO EDITAR
-    public function edit($id)
+    public function edit(int $id)
     {
         $observacion = Observacion::findOrFail($id);
 
@@ -85,7 +85,7 @@ class ObservacionController extends Controller
 
 
     // ACTUALIZAR
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         $request->validate([
             'registro_residencia_id' => 'required|exists:registro_residencias,id',
@@ -108,7 +108,7 @@ class ObservacionController extends Controller
 
 
     // ELIMINAR
-    public function destroy($id)
+    public function destroy(int $id)
     {
         $observacion = Observacion::findOrFail($id);
 

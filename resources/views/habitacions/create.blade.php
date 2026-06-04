@@ -105,6 +105,47 @@
 
                 </select>
 
+                <!-- COSTO MENSUAL -->
+                <div class="mb-4">
+
+                    <label class="block font-semibold mb-2">
+                        Costo Mensual (Bs)
+                    </label>
+
+                    <input
+                        type="number"
+                        step="0.01"
+                        name="costo_mensual"
+                        value="{{ old('costo_mensual') }}"
+                        class="w-full border rounded-lg px-4 py-2">
+
+                    @error('costo_mensual')
+                    <p class="text-red-500 text-sm mt-1">
+                        {{ $message }}
+                    </p>
+                    @enderror
+
+                </div>
+
+                <!-- ESTADO -->
+                <div class="mb-4">
+
+                    <label class="block font-semibold mb-2">
+                        Estado
+                    </label>
+
+                    <select
+                        name="estado"
+                        class="w-full border rounded-lg px-4 py-2">
+
+                        <option value="Disponible">Disponible</option>
+                        <option value="Ocupada">Ocupada</option>
+                        <option value="Mantenimiento">Mantenimiento</option>
+
+                    </select>
+
+                </div>
+
                 @error('residencia_id')
                 <p class="text-red-500 text-sm mt-1">
                     {{ $message }}

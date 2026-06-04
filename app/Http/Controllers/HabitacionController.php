@@ -6,31 +6,27 @@ use App\Models\Habitacion;
 use App\Models\Residencia;
 use Illuminate\Http\Request;
 
-class HabitacionController extends Controller
+class HabitacionController extends Controller 
 {
 
-    // LISTAR
     public function index(Request $request)
     {
-        // Captura búsqueda
         $buscar = $request->buscar;
 
-        // Consulta
-        $habitacions = Habitacion::with('residencia')
+        $residencias = Residencia::with(['habitacions' => function ($query) use ($buscar) {
 
-            ->when($buscar, function ($query, $buscar) {
+            if ($buscar) {
+                $query->where('numero', 'like', "%{$buscar}%");
+            }
 
-                $query->where('numero', 'like', "%{$buscar}%")
-                    ->orWhere('id', $buscar);
-            })
+            $query->orderBy('numero');
+        }])->get();
 
-            ->orderBy('id', 'desc')
-
-            ->get();
-
-        return view('habitacions.index', compact('habitacions', 'buscar'));
+        return view(
+            'habitacions.index',
+            compact('residencias', 'buscar')
+        );
     }
-
 
     // FORMULARIO CREAR
     public function create()
@@ -48,7 +44,9 @@ class HabitacionController extends Controller
         $request->validate([
             'numero' => 'required|string|max:50',
             'capacidad' => 'required|integer|min:1',
-            'residencia_id' => 'required|exists:residencias,id'
+            'residencia_id' => 'required|exists:residencias,id',
+            'costo_mensual' => 'required|numeric|min:0',
+            'estado' => 'required|in:Disponible,Ocupada,Mantenimiento',
         ]);
 
 
@@ -58,7 +56,6 @@ class HabitacionController extends Controller
 
         // SUMAR CAPACIDADES ACTUALES
         $capacidadActual = $residencia->habitacions->sum('capacidad');
-
 
         // NUEVA SUMA TOTAL
         $totalCapacidad = $capacidadActual + $request->capacidad;
@@ -83,6 +80,8 @@ class HabitacionController extends Controller
             'numero' => $request->numero,
             'capacidad' => $request->capacidad,
             'residencia_id' => $request->residencia_id,
+            'costo_mensual' => $request->costo_mensual,
+            'estado' => $request->estado,
         ]);
 
 
@@ -92,7 +91,7 @@ class HabitacionController extends Controller
 
 
     // MOSTRAR
-    public function show($id)
+    public function show( int $id)
     {
         $habitacion = Habitacion::with('residencia')
             ->findOrFail($id);
@@ -102,7 +101,7 @@ class HabitacionController extends Controller
 
 
     // FORMULARIO EDITAR
-    public function edit($id)
+    public function edit(int $id)
     {
         $habitacion = Habitacion::findOrFail($id);
 
@@ -114,13 +113,15 @@ class HabitacionController extends Controller
 
 
     // ACTUALIZAR
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         // VALIDACIONES
         $request->validate([
             'numero' => 'required|string|max:50',
             'capacidad' => 'required|integer|min:1',
-            'residencia_id' => 'required|exists:residencias,id'
+            'residencia_id' => 'required|exists:residencias,id',
+            'costo_mensual' => 'required|numeric|min:0',
+            'estado' => 'required|in:Disponible,Ocupada,Mantenimiento',
         ]);
 
         // BUSCAR
@@ -131,6 +132,8 @@ class HabitacionController extends Controller
             'numero' => $request->numero,
             'capacidad' => $request->capacidad,
             'residencia_id' => $request->residencia_id,
+            'costo_mensual' => $request->costo_mensual,
+            'estado' => $request->estado,
         ]);
 
         return redirect()->route('habitacions.index')
@@ -139,7 +142,7 @@ class HabitacionController extends Controller
 
 
     // ELIMINAR
-    public function destroy($id)
+    public function destroy(int $id)
     {
         // BUSCAR
         $habitacion = Habitacion::findOrFail($id);

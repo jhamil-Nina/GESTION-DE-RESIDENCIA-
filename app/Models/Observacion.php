@@ -18,4 +18,4 @@ class Observacion extends Model
     {
         return $this->belongsTo(RegistroResidencia::class);
     }
-}
+} 

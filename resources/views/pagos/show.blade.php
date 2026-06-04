@@ -55,6 +55,74 @@
                 <p class="font-semibold">{{ $pago->estado }}</p>
             </div>
 
+            <hr class="my-6">
+
+            <h3 class="text-xl font-bold mb-4">
+                📚 Historial de Pagos
+            </h3>
+
+            <table class="w-full border rounded-lg overflow-hidden">
+
+                <thead class="bg-gray-100">
+
+                    <tr>
+                        <th class="px-4 py-3">ID</th>
+                        <th class="px-4 py-3">Fecha</th>
+                        <th class="px-4 py-3">Monto</th>
+                        <th class="px-4 py-3">Método</th>
+                        <th class="px-4 py-3">Estado</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach($historialPagos as $historial)
+
+                    <tr class="border-t">
+
+                        <td class="px-4 py-3">
+                            {{ $historial->id }}
+                        </td>
+
+                        <td class="px-4 py-3">
+                            {{ $historial->fecha_pago }}
+                        </td>
+
+                        <td class="px-4 py-3">
+                            Bs {{ number_format($historial->monto, 2) }}
+                        </td>
+
+                        <td class="px-4 py-3">
+                            {{ $historial->metodo_pago }}
+                        </td>
+
+                        <td class="px-4 py-3">
+
+                            @if($historial->estado == 'Pagado')
+
+                            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
+                                Pagado
+                            </span>
+
+                            @else
+
+                            <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm">
+                                Pendiente
+                            </span>
+
+                            @endif
+
+                        </td>
+
+                    </tr>
+
+                    @endforeach
+
+                </tbody>
+
+            </table>
+
         </div>
 
         <div class="mt-6">

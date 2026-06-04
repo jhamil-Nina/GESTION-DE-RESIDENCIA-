@@ -9,9 +9,10 @@ class Habitacion extends Model
     protected $fillable = [
         'numero',
         'capacidad',
+        'costo_mensual',
+        'estado',
         'residencia_id'
     ];
-
     // RELACIONES
 
     public function residencia()
@@ -23,4 +24,4 @@ class Habitacion extends Model
     {
         return $this->hasMany(RegistroResidencia::class);
     }
-}
+} 

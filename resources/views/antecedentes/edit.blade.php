@@ -4,63 +4,118 @@
 
 <div class="max-w-3xl mx-auto">
 
-    <h1 class="text-2xl font-bold mb-6">Editar Antecedente</h1>
+    {{-- HEADER --}}
+    <div class="bg-gradient-to-r from-yellow-500 to-orange-500 p-6 rounded-t-xl text-white">
 
-    <form action="{{ route('antecedentes.update',$antecedente) }}" method="POST"
-        class="bg-white p-6 rounded shadow">
+        <h2 class="text-2xl font-bold">
+            ✏ Editar Antecedente
+        </h2>
 
-        @csrf
-        @method('PUT')
+        <p class="text-sm opacity-90">
+            Modifica la información del antecedente
+        </p>
 
-        <div class="mb-4">
+    </div>
 
-            <label class="block">Usuario</label>
+    {{-- CARD --}}
+    <div class="bg-white p-6 rounded-b-xl shadow">
 
-            <select name="user_id" class="w-full border p-2 rounded">
+        <form action="{{ route('antecedentes.update', $antecedente) }}" method="POST">
 
-                @foreach($users as $user)
+            @csrf
+            @method('PUT')
 
-                <option value="{{ $user->id }}"
-                    @if($antecedente->user_id == $user->id) selected @endif>
+            {{-- USUARIO --}}
+            <div class="mb-4">
 
-                    {{ $user->name }}
+                <label class="block font-semibold mb-2">
+                    Usuario
+                </label>
 
-                </option>
+                <select
+                    name="user_id"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500">
 
-                @endforeach
+                    @foreach($users as $user)
 
-            </select>
+                    <option
+                        value="{{ $user->id }}"
+                        {{ old('user_id', $antecedente->user_id) == $user->id ? 'selected' : '' }}>
 
-        </div>
+                        {{ $user->name }}
 
-        <div class="mb-4">
+                    </option>
 
-            <label class="block">Descripción</label>
+                    @endforeach
 
-            <textarea name="descripcion"
-                class="w-full border p-2 rounded">
+                </select>
 
-            {{ $antecedente->descripcion }}
+                @error('user_id')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
 
-            </textarea>
+            </div>
 
-        </div>
+            {{-- DESCRIPCIÓN --}}
+            <div class="mb-4">
 
-        <div class="mb-4">
+                <label class="block font-semibold mb-2">
+                    Descripción
+                </label>
 
-            <label class="block">Fecha</label>
+                <textarea
+                    name="descripcion"
+                    rows="4"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500">{{ old('descripcion', $antecedente->descripcion) }}</textarea>
 
-            <input type="date" name="fecha"
-                value="{{ $antecedente->fecha }}"
-                class="w-full border p-2 rounded">
+                @error('descripcion')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
 
-        </div>
+            </div>
 
-        <button class="bg-yellow-500 text-white px-4 py-2 rounded">
-            Actualizar
-        </button>
+            {{-- FECHA --}}
+            <div class="mb-6">
 
-    </form>
+                <label class="block font-semibold mb-2">
+                    Fecha
+                </label>
+
+                <input
+                    type="date"
+                    name="fecha"
+                    value="{{ old('fecha', $antecedente->fecha) }}"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+
+                @error('fecha')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+
+            </div>
+
+            {{-- BOTONES --}}
+            <div class="flex justify-end gap-3">
+
+                <a href="{{ route('antecedentes.index') }}"
+                    class="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded-lg">
+
+                    Cancelar
+
+                </a>
+
+                <button
+                    type="submit"
+                    class="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded-lg">
+
+                    Actualizar
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
 

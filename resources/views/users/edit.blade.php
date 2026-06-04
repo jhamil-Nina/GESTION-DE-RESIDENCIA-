@@ -95,6 +95,31 @@
 
             </div>
 
+            <!-- ROL -->
+            <div class="mb-6">
+
+                <label class="block font-semibold mb-2">
+                    Rol
+                </label>
+
+                <select
+                    name="rol"
+                    class="w-full border rounded-lg px-4 py-2">
+
+                    <option value="admin"
+                        {{ $user->rol == 'admin' ? 'selected' : '' }}>
+                        Administrador
+                    </option>
+
+                    <option value="residente"
+                        {{ $user->rol == 'residente' ? 'selected' : '' }}>
+                        Residente
+                    </option>
+
+                </select>
+
+            </div>
+
             <div class="flex justify-end gap-3">
 
                 <a href="{{ route('users.index') }}"

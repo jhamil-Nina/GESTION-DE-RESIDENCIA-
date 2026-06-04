@@ -42,14 +42,13 @@ class RegistroResidenciaController extends Controller
      */
     public function create()
     {
-        $users = User::all();
+        $users = User::with('categoriaOcupacion')->get();
+
         $habitacions = Habitacion::all();
-        $categorias = CategoriaOcupacion::all();
 
         return view('registro_residencias.create', compact(
             'users',
-            'habitacions',
-            'categorias'
+            'habitacions'
         ));
     }
 

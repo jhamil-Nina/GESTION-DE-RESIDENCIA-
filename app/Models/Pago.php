@@ -21,3 +21,4 @@ class Pago extends Model
         return $this->belongsTo(RegistroResidencia::class);
     }
 }
+ 

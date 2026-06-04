@@ -39,6 +39,7 @@
                 action="{{ route('categoria_ocupacions.index') }}"
                 class="flex gap-2 w-2/3">
 
+                
                 <!-- INPUT -->
                 <input
                     type="text"

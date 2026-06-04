@@ -38,5 +38,5 @@ return new class extends Migration
         Schema::dropIfExists('registro_residencias');
     }
     
-};
+}; 
  

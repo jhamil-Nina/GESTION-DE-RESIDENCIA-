@@ -50,7 +50,7 @@ class CategoriaOcupacionController extends Controller
     }
 
 
-    public function show($id)
+    public function show(int $id)
     {
         $categoria = CategoriaOcupacion::findOrFail($id);
 
@@ -58,7 +58,7 @@ class CategoriaOcupacionController extends Controller
     }
 
 
-    public function edit($id)
+    public function edit(int $id)
     {
         $categoria = CategoriaOcupacion::findOrFail($id);
 
@@ -66,7 +66,7 @@ class CategoriaOcupacionController extends Controller
     }
 
 
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         $request->validate([
             'nombre' => 'required|string|max:100'
@@ -83,7 +83,7 @@ class CategoriaOcupacionController extends Controller
     }
 
 
-    public function destroy($id)
+    public function destroy(int $id)
     {
         $categoria = CategoriaOcupacion::findOrFail($id);
 

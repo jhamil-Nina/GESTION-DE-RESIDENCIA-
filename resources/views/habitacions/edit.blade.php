@@ -80,6 +80,52 @@
 
             </div>
 
+            <!-- COSTO MENSUAL -->
+            <div class="mb-4">
+
+                <label class="block font-semibold mb-2">
+                    Costo Mensual (Bs)
+                </label>
+
+                <input
+                    type="number"
+                    step="0.01"
+                    name="costo_mensual"
+                    value="{{ old('costo_mensual', $habitacion->costo_mensual) }}"
+                    class="w-full border rounded-lg px-4 py-2">
+
+            </div>
+
+            <!-- ESTADO -->
+            <div class="mb-4">
+
+                <label class="block font-semibold mb-2">
+                    Estado
+                </label>
+
+                <select
+                    name="estado"
+                    class="w-full border rounded-lg px-4 py-2">
+
+                    <option value="Disponible"
+                        {{ $habitacion->estado == 'Disponible' ? 'selected' : '' }}>
+                        Disponible
+                    </option>
+
+                    <option value="Ocupada"
+                        {{ $habitacion->estado == 'Ocupada' ? 'selected' : '' }}>
+                        Ocupada
+                    </option>
+
+                    <option value="Mantenimiento"
+                        {{ $habitacion->estado == 'Mantenimiento' ? 'selected' : '' }}>
+                        Mantenimiento
+                    </option>
+
+                </select>
+
+            </div>
+
             <!-- BOTONES -->
             <div class="flex justify-end gap-3">
 

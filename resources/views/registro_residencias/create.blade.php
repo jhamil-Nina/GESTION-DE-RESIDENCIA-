@@ -29,8 +29,13 @@
 
                     @foreach($users as $user)
 
-                    <option value="{{ $user->id }}">
+                    <option
+                        value="{{ $user->id }}"
+                        data-categoria-id="{{ $user->categoria_ocupacion_id }}"
+                        data-categoria="{{ $user->categoriaOcupacion->nombre ?? '' }}">
+
                         {{ $user->name }}
+
                     </option>
 
                     @endforeach
@@ -67,19 +72,24 @@
 
                 <label class="font-semibold block mb-2">Categoría</label>
 
-                <select name="categoria_ocupacion_id" class="w-full border rounded-lg px-4 py-2">
+                <div class="mb-4">
 
-                    <option value="">Seleccione</option>
+                    <label class="font-semibold block mb-2">
+                        Categoría
+                    </label>
 
-                    @foreach($categorias as $categoria)
+                    <input
+                        type="text"
+                        id="categoria_nombre"
+                        class="w-full border rounded-lg px-4 py-2 bg-gray-100"
+                        readonly>
 
-                    <option value="{{ $categoria->id }}">
-                        {{ $categoria->nombre }}
-                    </option>
+                    <input
+                        type="hidden"
+                        name="categoria_ocupacion_id"
+                        id="categoria_id">
 
-                    @endforeach
-
-                </select>
+                </div>
 
             </div>
 
@@ -131,5 +141,32 @@
     </div>
 
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const usuario = document.querySelector('[name="user_id"]');
+
+        const categoriaNombre =
+            document.getElementById('categoria_nombre');
+
+        const categoriaId =
+            document.getElementById('categoria_id');
+
+        usuario.addEventListener('change', function() {
+
+            const opcion =
+                this.options[this.selectedIndex];
+
+            categoriaNombre.value =
+                opcion.dataset.categoria || '';
+
+            categoriaId.value =
+                opcion.dataset.categoriaId || '';
+
+        });
+
+    });
+</script>
 
 @endsection

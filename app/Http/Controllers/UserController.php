@@ -25,8 +25,6 @@ class UserController extends Controller
                     ->orWhere('email', 'like', "%{$buscar}%");
             })
 
-            ->orderBy('id', 'desc')
-
             ->get();
 
         return view('users.index', compact('users', 'buscar'));
@@ -54,6 +52,7 @@ class UserController extends Controller
             'telefono' => 'nullable|string|max:50',
             'direccion' => 'nullable|string|max:255',
             'categoria_ocupacion_id' => 'nullable|exists:categoria_ocupacions,id',
+            'rol' => 'required|in:admin,residente',
             'password' => 'required|string|min:6',
         ]);
 
@@ -65,6 +64,7 @@ class UserController extends Controller
             'telefono' => $request->telefono,
             'direccion' => $request->direccion,
             'categoria_ocupacion_id' => $request->categoria_ocupacion_id,
+            'rol' => $request->rol,
             'password' => $request->password
         ]);
 
@@ -74,7 +74,7 @@ class UserController extends Controller
 
 
     // MOSTRAR
-    public function show($id)
+    public function show(int $id)
     {
         $user = User::with('categoriaOcupacion')
             ->findOrFail($id);
@@ -84,7 +84,7 @@ class UserController extends Controller
 
 
     // FORMULARIO EDITAR
-    public function edit($id)
+    public function edit(int $id)
     {
         $user = User::findOrFail($id);
 
@@ -96,7 +96,7 @@ class UserController extends Controller
 
 
     // ACTUALIZAR
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         // VALIDACIONES
         $request->validate([
@@ -106,6 +106,7 @@ class UserController extends Controller
             'telefono' => 'nullable|string|max:50',
             'direccion' => 'nullable|string|max:255',
             'categoria_ocupacion_id' => 'nullable|exists:categoria_ocupacions,id',
+            'rol' => 'required|in:admin,residente',
         ]);
 
         // BUSCAR
@@ -119,6 +120,7 @@ class UserController extends Controller
             'telefono' => $request->telefono,
             'direccion' => $request->direccion,
             'categoria_ocupacion_id' => $request->categoria_ocupacion_id,
+            'rol' => $request->rol,
         ]);
 
         return redirect()->route('users.index')
@@ -127,7 +129,7 @@ class UserController extends Controller
 
 
     // ELIMINAR
-    public function destroy($id)
+    public function destroy(int $id)
     {
         // BUSCAR
         $user = User::findOrFail($id);

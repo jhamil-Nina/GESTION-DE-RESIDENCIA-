@@ -19,3 +19,4 @@ class CategoriaOcupacion extends Model
         return $this->hasMany(User::class);
     }
 }
+ 

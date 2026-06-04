@@ -4,63 +4,118 @@
 
 <div class="max-w-3xl mx-auto">
 
-    <h1 class="text-2xl font-bold mb-6">Editar Observación</h1>
+    {{-- HEADER --}}
+    <div class="bg-gradient-to-r from-yellow-500 to-orange-500 p-6 rounded-t-xl text-white">
 
-    <form action="{{ route('observacions.update',$observacion) }}"
-        method="POST"
-        class="bg-white p-6 rounded shadow">
+        <h2 class="text-2xl font-bold">
+            ✏ Editar Observación
+        </h2>
 
-        @csrf
-        @method('PUT')
+        <p class="text-sm opacity-90">
+            Modifica la información de la observación
+        </p>
 
-        <div class="mb-4">
+    </div>
 
-            <label class="block mb-1">Registro de Residencia</label>
+    {{-- CARD --}}
+    <div class="bg-white p-6 rounded-b-xl shadow">
 
-            <select name="registro_residencia_id"
-                class="w-full border rounded p-2">
+        <form action="{{ route('observacions.update', $observacion) }}" method="POST">
 
-                @foreach($registros as $registro)
+            @csrf
+            @method('PUT')
 
-                <option value="{{ $registro->id }}"
-                    @if($registro->id == $observacion->registro_residencia_id) selected @endif>
+            {{-- REGISTRO --}}
+            <div class="mb-4">
 
-                    {{ $registro->user->name }} - Habitación {{ $registro->habitacion->numero }}
+                <label class="block font-semibold mb-2">
+                    Registro de Residencia
+                </label>
 
-                </option>
+                <select
+                    name="registro_residencia_id"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500">
 
-                @endforeach
+                    @foreach($registros as $registro)
 
-            </select>
+                    <option
+                        value="{{ $registro->id }}"
+                        {{ old('registro_residencia_id', $observacion->registro_residencia_id) == $registro->id ? 'selected' : '' }}>
 
-        </div>
+                        {{ $registro->user->name }} - Habitación {{ $registro->habitacion->numero }}
 
-        <div class="mb-4">
+                    </option>
 
-            <label class="block mb-1">Descripción</label>
+                    @endforeach
 
-            <textarea name="descripcion"
-                class="w-full border rounded p-2"
-                rows="4">{{ $observacion->descripcion }}</textarea>
+                </select>
 
-        </div>
+                @error('registro_residencia_id')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
 
-        <div class="mb-4">
+            </div>
 
-            <label class="block mb-1">Fecha</label>
+            {{-- DESCRIPCIÓN --}}
+            <div class="mb-4">
 
-            <input type="date"
-                name="fecha"
-                value="{{ $observacion->fecha }}"
-                class="w-full border rounded p-2">
+                <label class="block font-semibold mb-2">
+                    Descripción
+                </label>
 
-        </div>
+                <textarea
+                    name="descripcion"
+                    rows="4"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500">{{ old('descripcion', $observacion->descripcion) }}</textarea>
 
-        <button class="bg-blue-600 text-white px-4 py-2 rounded">
-            Actualizar
-        </button>
+                @error('descripcion')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
 
-    </form>
+            </div>
+
+            {{-- FECHA --}}
+            <div class="mb-6">
+
+                <label class="block font-semibold mb-2">
+                    Fecha
+                </label>
+
+                <input
+                    type="date"
+                    name="fecha"
+                    value="{{ old('fecha', $observacion->fecha) }}"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+
+                @error('fecha')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+
+            </div>
+
+            {{-- BOTONES --}}
+            <div class="flex justify-end gap-3">
+
+                <a href="{{ route('observacions.index') }}"
+                    class="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded-lg">
+
+                    Cancelar
+
+                </a>
+
+                <button
+                    type="submit"
+                    class="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded-lg">
+
+                    Actualizar
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
 

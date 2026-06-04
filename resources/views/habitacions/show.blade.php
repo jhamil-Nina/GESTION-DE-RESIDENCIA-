@@ -52,6 +52,26 @@
 
             <div>
                 <p class="text-gray-500 text-sm">
+                    Costo Mensual
+                </p>
+
+                <p class="font-semibold text-green-600">
+                    Bs {{ number_format($habitacion->costo_mensual, 2) }}
+                </p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 text-sm">
+                    Estado
+                </p>
+
+                <p class="font-semibold">
+                    {{ $habitacion->estado }}
+                </p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 text-sm">
                     Residencia
                 </p>
 

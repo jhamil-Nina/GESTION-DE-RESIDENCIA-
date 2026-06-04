@@ -4,54 +4,121 @@
 
 <div class="max-w-3xl mx-auto">
 
-    <h1 class="text-2xl font-bold mb-6">Registrar Observación</h1>
+    {{-- HEADER --}}
+    <div class="bg-gradient-to-r from-green-500 to-emerald-600 p-6 rounded-t-xl text-white">
 
-    <form action="{{ route('observacions.store') }}" method="POST"
-        class="bg-white p-6 rounded shadow">
+        <h2 class="text-2xl font-bold">
+            ➕ Nueva Observación
+        </h2>
 
-        @csrf
+        <p class="text-sm opacity-90">
+            Registrar una observación disciplinaria
+        </p>
 
-        <div class="mb-4">
-            <label class="block mb-1">Registro de Residencia</label>
+    </div>
 
-            <select name="registro_residencia_id" class="w-full border rounded p-2">
+    {{-- CARD --}}
+    <div class="bg-white p-6 rounded-b-xl shadow">
 
-                @foreach($registros as $registro)
+        <form action="{{ route('observacions.store') }}" method="POST">
 
-                <option value="{{ $registro->id }}">
-                    {{ $registro->user->name }} - Habitación {{ $registro->habitacion->numero }}
-                </option>
+            @csrf
 
-                @endforeach
+            {{-- REGISTRO --}}
+            <div class="mb-4">
 
-            </select>
-        </div>
+                <label class="block font-semibold mb-2">
+                    Registro de Residencia
+                </label>
 
-        <div class="mb-4">
+                <select
+                    name="registro_residencia_id"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
 
-            <label class="block mb-1">Descripción</label>
+                    <option value="">
+                        Seleccione un residente
+                    </option>
 
-            <textarea name="descripcion"
-                class="w-full border rounded p-2"
-                rows="4"></textarea>
+                    @foreach($registros as $registro)
 
-        </div>
+                    <option
+                        value="{{ $registro->id }}"
+                        {{ old('registro_residencia_id') == $registro->id ? 'selected' : '' }}>
 
-        <div class="mb-4">
+                        {{ $registro->user->name }} - Habitación {{ $registro->habitacion->numero }}
 
-            <label class="block mb-1">Fecha</label>
+                    </option>
 
-            <input type="date"
-                name="fecha"
-                class="w-full border rounded p-2">
+                    @endforeach
 
-        </div>
+                </select>
 
-        <button class="bg-blue-600 text-white px-4 py-2 rounded">
-            Guardar
-        </button>
+                @error('registro_residencia_id')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
 
-    </form>
+            </div>
+
+            {{-- DESCRIPCIÓN --}}
+            <div class="mb-4">
+
+                <label class="block font-semibold mb-2">
+                    Descripción
+                </label>
+
+                <textarea
+                    name="descripcion"
+                    rows="4"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">{{ old('descripcion') }}</textarea>
+
+                @error('descripcion')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+
+            </div>
+
+            {{-- FECHA --}}
+            <div class="mb-6">
+
+                <label class="block font-semibold mb-2">
+                    Fecha
+                </label>
+
+                <input
+                    type="date"
+                    name="fecha"
+                    value="{{ old('fecha') }}"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+
+                @error('fecha')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+
+            </div>
+
+            {{-- BOTONES --}}
+            <div class="flex justify-end gap-3">
+
+                <a href="{{ route('observacions.index') }}"
+                    class="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded-lg">
+
+                    Cancelar
+
+                </a>
+
+                <button
+                    type="submit"
+                    class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg">
+
+                    Guardar
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
 

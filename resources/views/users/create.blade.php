@@ -112,6 +112,41 @@
 
             </div>
 
+            <!-- ROL -->
+            <div class="mb-6">
+
+                <label class="block font-semibold mb-2">
+                    Rol
+                </label>
+
+                <select
+                    name="rol"
+                    class="w-full border rounded-lg px-4 py-2">
+
+                    <option value="">
+                        Seleccione un rol
+                    </option>
+
+                    <option value="admin"
+                        {{ old('rol') == 'admin' ? 'selected' : '' }}>
+                        Administrador
+                    </option>
+
+                    <option value="residente"
+                        {{ old('rol') == 'residente' ? 'selected' : '' }}>
+                        Residente
+                    </option>
+
+                </select>
+
+                @error('rol')
+                <p class="text-red-500 text-sm mt-1">
+                    {{ $message }}
+                </p>
+                @enderror
+
+            </div>
+
             <!-- PASSWORD -->
             <div class="mb-6">
 

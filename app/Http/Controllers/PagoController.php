@@ -8,25 +8,58 @@ use Illuminate\Http\Request;
 
 class PagoController extends Controller
 {
-    // LISTAR
+
     public function index(Request $request)
     {
         $buscar = $request->buscar;
 
-        $pagos = Pago::with('registroResidencia.user', 'registroResidencia.habitacion')
+        $registros = RegistroResidencia::with([
+            'user',
+            'habitacion',
+            'pagos'
+        ])
 
             ->when($buscar, function ($query, $buscar) {
 
-                $query->where('metodo_pago', 'like', "%{$buscar}%")
-                    ->orWhere('estado', 'like', "%{$buscar}%")
-                    ->orWhere('monto', 'like', "%{$buscar}%")
-                    ->orWhere('id', $buscar);
+                $query->whereHas('user', function ($q) use ($buscar) {
+                    $q->where('name', 'like', "%{$buscar}%");
+                })
+
+                    ->orWhereHas('habitacion', function ($q) use ($buscar) {
+                        $q->where('numero', 'like', "%{$buscar}%");
+                    });
             })
 
-            ->orderBy('id', 'desc')
             ->get();
 
-        return view('pagos.index', compact('pagos', 'buscar'));
+        // Estadísticas
+        $totalRecaudado = 0;
+        $totalDeuda = 0;
+        $residentesConDeuda = 0;
+
+        foreach ($registros as $registro) {
+
+            $costo = $registro->habitacion->costo_mensual;
+
+            $pagado = $registro->pagos->sum('monto');
+
+            $deuda = max(0, $costo - $pagado);
+
+            $totalRecaudado += $pagado;
+            $totalDeuda += $deuda;
+
+            if ($deuda > 0) {
+                $residentesConDeuda++;
+            }
+        }
+
+        return view('pagos.index', compact(
+            'registros',
+            'buscar',
+            'totalRecaudado',
+            'totalDeuda',
+            'residentesConDeuda'
+        ));
     }
 
 
@@ -61,12 +94,23 @@ class PagoController extends Controller
     // MOSTRAR
     public function show(string $id)
     {
-        $pago = Pago::with('registroResidencia.user', 'registroResidencia.habitacion')
-            ->findOrFail($id);
+        $pago = Pago::with(
+            'registroResidencia.user',
+            'registroResidencia.habitacion'
+        )->findOrFail($id);
 
-        return view('pagos.show', compact('pago'));
+        $historialPagos = Pago::where(
+            'registro_residencia_id',
+            $pago->registro_residencia_id
+        )
+            ->orderBy('fecha_pago', 'desc')
+            ->get();
+
+        return view(
+            'pagos.show',
+            compact('pago', 'historialPagos')
+        );
     }
-
 
     // FORM EDITAR
     public function edit(string $id)

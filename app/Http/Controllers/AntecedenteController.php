@@ -87,3 +87,4 @@ class AntecedenteController extends Controller
             ->with('success', 'Antecedente eliminado correctamente');
     } 
 }
+

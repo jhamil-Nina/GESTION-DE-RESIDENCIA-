@@ -4,52 +4,122 @@
 
 <div class="max-w-3xl mx-auto">
 
-    <h1 class="text-2xl font-bold mb-6">Registrar Antecedente</h1>
+    {{-- HEADER --}}
+    <div class="bg-gradient-to-r from-green-500 to-emerald-600 p-6 rounded-t-xl text-white">
 
-    <form action="{{ route('antecedentes.store') }}" method="POST"
-        class="bg-white p-6 rounded shadow">
+        <h2 class="text-2xl font-bold">
+            ➕ Nuevo Antecedente
+        </h2>
 
-        @csrf
+        <p class="text-sm opacity-90">
+            Registrar un antecedente para un residente
+        </p>
 
-        <div class="mb-4">
+    </div>
 
-            <label class="block">Usuario</label>
+    {{-- CARD --}}
+    <div class="bg-white p-6 rounded-b-xl shadow">
 
-            <select name="user_id" class="w-full border p-2 rounded">
+        <form action="{{ route('antecedentes.store') }}" method="POST">
 
-                @foreach($users as $user)
+            @csrf
 
-                <option value="{{ $user->id }}">{{ $user->name }}</option>
+            {{-- USUARIO --}}
+            <div class="mb-4">
 
-                @endforeach
+                <label class="block font-semibold mb-2">
+                    Usuario
+                </label>
 
-            </select>
+                <select
+                    name="user_id"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
 
-        </div>
+                    <option value="">
+                        Seleccione un usuario
+                    </option>
 
-        <div class="mb-4">
+                    @foreach($users as $user)
 
-            <label class="block">Descripción</label>
+                    <option
+                        value="{{ $user->id }}"
+                        {{ old('user_id') == $user->id ? 'selected' : '' }}>
 
-            <textarea name="descripcion" class="w-full border p-2 rounded"></textarea>
+                        {{ $user->name }}
 
-        </div>
+                    </option>
 
-        <div class="mb-4">
+                    @endforeach
 
-            <label class="block">Fecha</label>
+                </select>
 
-            <input type="date" name="fecha"
-                class="w-full border p-2 rounded">
+                @error('user_id')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
 
-        </div>
+            </div>
 
-        <button class="bg-green-500 text-white px-4 py-2 rounded">
-            Guardar
-        </button>
+            {{-- DESCRIPCIÓN --}}
+            <div class="mb-4">
 
-    </form>
+                <label class="block font-semibold mb-2">
+                    Descripción
+                </label>
+
+                <textarea
+                    name="descripcion"
+                    rows="4"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">{{ old('descripcion') }}</textarea>
+
+                @error('descripcion')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+
+            </div>
+
+            {{-- FECHA --}}
+            <div class="mb-6">
+
+                <label class="block font-semibold mb-2">
+                    Fecha
+                </label>
+
+                <input
+                    type="date"
+                    name="fecha"
+                    value="{{ old('fecha') }}"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+
+                @error('fecha')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+
+            </div>
+
+            {{-- BOTONES --}}
+            <div class="flex justify-end gap-3">
+
+                <a href="{{ route('antecedentes.index') }}"
+                    class="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded-lg">
+
+                    Cancelar
+
+                </a>
+
+                <button
+                    type="submit"
+                    class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg">
+
+                    Guardar
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
 
-@endsection 
+@endsection

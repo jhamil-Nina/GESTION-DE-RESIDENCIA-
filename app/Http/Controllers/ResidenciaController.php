@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Residencia;
 use Illuminate\Http\Request;
 
-class ResidenciaController extends Controller
+class ResidenciaController extends Controller    
 {
 
     // LISTAR
@@ -17,7 +17,7 @@ class ResidenciaController extends Controller
         // Consulta
         $residencias = Residencia::query()
 
-            // Buscar por nombre o dirección
+            // Buscar por nombre  dirección   id
             ->when($buscar, function ($query, $buscar) {
 
                 $query->where('nombre', 'like', "%{$buscar}%")
@@ -25,7 +25,7 @@ class ResidenciaController extends Controller
                     ->orWhere('id', $buscar);
             })
 
-            // Orden descendente
+            // Orden de la lista - desde el más reciente al primero
             ->orderBy('id', 'desc')
 
             // Obtener registros
@@ -65,7 +65,7 @@ class ResidenciaController extends Controller
 
 
     // MOSTRAR
-    public function show($id)
+    public function show(int $id)
     {
         $residencia = Residencia::findOrFail($id);
 
@@ -74,7 +74,7 @@ class ResidenciaController extends Controller
 
 
     // FORMULARIO EDITAR
-    public function edit($id)
+    public function edit(int $id)
     {
         $residencia = Residencia::findOrFail($id);
 
@@ -83,7 +83,7 @@ class ResidenciaController extends Controller
 
 
     // ACTUALIZAR
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         // VALIDACIONES
         $request->validate([
@@ -108,7 +108,7 @@ class ResidenciaController extends Controller
 
 
     // ELIMINAR
-    public function destroy($id)
+    public function destroy(int $id)
     {
         // BUSCAR
         $residencia = Residencia::findOrFail($id);
