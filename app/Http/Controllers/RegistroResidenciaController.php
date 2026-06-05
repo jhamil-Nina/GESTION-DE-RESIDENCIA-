@@ -105,13 +105,6 @@ class RegistroResidenciaController extends Controller
             })
             ->count();
 
-        // PRUEBA
-        dd(
-            $habitacion->id,
-            $habitacion->numero,
-            $habitacion->capacidad,
-            $ocupantesActuales
-        );
 
         // Validar capacidad
         if ($ocupantesActuales >= $habitacion->capacidad) {
