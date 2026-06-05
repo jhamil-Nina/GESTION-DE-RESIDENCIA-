@@ -46,7 +46,6 @@ class HabitacionController extends Controller
             'capacidad' => 'required|integer|min:1',
             'residencia_id' => 'required|exists:residencias,id',
             'costo_mensual' => 'required|numeric|min:0',
-            'estado' => 'required|in:Disponible,Ocupada,Mantenimiento',
         ]);
 
 
@@ -81,7 +80,6 @@ class HabitacionController extends Controller
             'capacidad' => $request->capacidad,
             'residencia_id' => $request->residencia_id,
             'costo_mensual' => $request->costo_mensual,
-            'estado' => $request->estado,
         ]);
 
 
@@ -121,7 +119,6 @@ class HabitacionController extends Controller
             'capacidad' => 'required|integer|min:1',
             'residencia_id' => 'required|exists:residencias,id',
             'costo_mensual' => 'required|numeric|min:0',
-            'estado' => 'required|in:Disponible,Ocupada,Mantenimiento',
         ]);
 
         // BUSCAR
@@ -133,7 +130,6 @@ class HabitacionController extends Controller
             'capacidad' => $request->capacidad,
             'residencia_id' => $request->residencia_id,
             'costo_mensual' => $request->costo_mensual,
-            'estado' => $request->estado,
         ]);
 
         return redirect()->route('habitacions.index')

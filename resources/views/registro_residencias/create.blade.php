@@ -104,10 +104,6 @@
 
                 <div class="mb-4">
 
-                    <label class="font-semibold block mb-2">
-                        Categoría
-                    </label>
-
                     <input
                         type="text"
                         id="categoria_nombre"

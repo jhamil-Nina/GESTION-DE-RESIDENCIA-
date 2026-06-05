@@ -124,27 +124,7 @@ class RegistroResidenciaController extends Controller
         // Crear registro
         RegistroResidencia::create($request->all());
 
-        // Volver a contar después de registrar
-        $ocupantesActuales = RegistroResidencia::where(
-            'habitacion_id',
-            $habitacion->id
-        )
-            ->where(function ($query) {
-                $query->whereNull('fecha_salida')
-                    ->orWhere('fecha_salida', '>=', now()->toDateString());
-            })
-            ->count();
-
-        // Actualizar estado
-        if ($ocupantesActuales >= $habitacion->capacidad) {
-
-            $habitacion->estado = 'Ocupada';
-        } else {
-
-            $habitacion->estado = 'Disponible';
-        }
-
-        $habitacion->save();
+        $this->actualizarEstadoHabitacion($habitacion->id);
 
         return redirect()
             ->route('registro_residencias.index')
@@ -202,7 +182,14 @@ class RegistroResidenciaController extends Controller
 
         $registro = RegistroResidencia::findOrFail($id);
 
+        // Guardar habitación anterior
+        $habitacionAnterior = $registro->habitacion_id;
+
         $registro->update($request->all());
+
+        // Actualizar estado de ambas habitaciones
+        $this->actualizarEstadoHabitacion($habitacionAnterior);
+        $this->actualizarEstadoHabitacion($registro->habitacion_id);
 
         return redirect()
             ->route('registro_residencias.index')
@@ -216,11 +203,40 @@ class RegistroResidenciaController extends Controller
     {
         $registro = RegistroResidencia::findOrFail($id);
 
+        $habitacionId = $registro->habitacion_id;
+
         $registro->delete();
+
+        $this->actualizarEstadoHabitacion($habitacionId);
 
         return redirect()
             ->route('registro_residencias.index')
             ->with('success', 'Registro eliminado correctamente');
+    }
+
+    private function actualizarEstadoHabitacion($habitacionId)
+    {
+        $habitacion = Habitacion::find($habitacionId);
+
+        if (!$habitacion) {
+            return;
+        }
+
+        $ocupantesActuales = RegistroResidencia::where(
+            'habitacion_id',
+            $habitacion->id
+        )
+            ->where(function ($query) {
+                $query->whereNull('fecha_salida')
+                    ->orWhere('fecha_salida', '>=', now()->toDateString());
+            })
+            ->count();
+
+        $habitacion->estado = $ocupantesActuales >= $habitacion->capacidad
+            ? 'Ocupada'
+            : 'Disponible';
+
+        $habitacion->save();
     }
 }
  

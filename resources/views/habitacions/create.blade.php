@@ -126,23 +126,7 @@
                     @enderror
 
                 </div>
-
-                <!-- ESTADO -->
-                <div class="mb-4">
-
-                    <label class="block font-semibold mb-2">
-                        Estado
-                    </label>
-
-                    <select
-                        name="estado"
-                        class="w-full border rounded-lg px-4 py-2">
-
-                        <option value="Disponible">Disponible</option>
-                        <option value="Ocupada">Ocupada</option>
-                        <option value="Mantenimiento">Mantenimiento</option>
-
-                    </select>
+                
 
                 </div>
 
