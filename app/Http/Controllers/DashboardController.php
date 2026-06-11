@@ -4,12 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Habitacion;
-use App\Models\Residencia;
 use App\Models\RegistroResidencia;
 use App\Models\Pago;
-use App\Models\Observacion;
-use App\Models\Antecedente;
-use App\Models\CategoriaOcupacion;
+
 
 class DashboardController extends Controller
 {

@@ -80,7 +80,6 @@
 
         <table class="w-full border rounded-lg overflow-hidden">
 
-            ```
             <thead class="bg-gray-100">
 
                 <tr>
@@ -243,7 +242,6 @@
                 @endforelse
 
             </tbody>
-            ```
 
         </table>
 

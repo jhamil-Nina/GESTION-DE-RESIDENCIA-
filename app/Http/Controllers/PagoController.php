@@ -66,7 +66,20 @@ class PagoController extends Controller
     // FORM CREAR
     public function create()
     {
-        $registros = RegistroResidencia::with('user', 'habitacion')->get();
+        $registros = RegistroResidencia::with(
+            'user',
+            'habitacion',
+            'pagos'
+        )
+            ->get()
+            ->filter(function ($registro) {
+
+                $costo = $registro->habitacion->costo_mensual;
+
+                $pagado = $registro->pagos->sum('monto');
+
+                return $pagado < $costo;
+            });
 
         return view('pagos.create', compact('registros'));
     }
@@ -75,19 +88,67 @@ class PagoController extends Controller
     // GUARDAR
     public function store(Request $request)
     {
-        $request->validate([
-            'registro_residencia_id' => 'required|exists:registro_residencias,id',
-            'monto' => 'required|numeric|min:0',
-            'fecha_pago' => 'required|date',
-            'metodo_pago' => 'required|string|max:50',
-            'estado' => 'required|string|max:20'
-        ]);
+    $request->validate([
+        'registro_residencia_id' => 'required|exists:registro_residencias,id',
+        'monto' => 'required|numeric|min:0',
+        'fecha_pago' => 'required|date',
+        'metodo_pago' => 'required|string|max:50'
+    ]);
 
-        Pago::create($request->all());
+    $registro = RegistroResidencia::with(
+        'habitacion',
+        'pagos'
+    )->findOrFail(
+        $request->registro_residencia_id
+    );
 
-        return redirect()
-            ->route('pagos.index')
-            ->with('success', 'Pago registrado correctamente');
+    $costo = $registro->habitacion->costo_mensual;
+
+    $pagado = $registro->pagos->sum('monto');
+
+    $deuda = $costo - $pagado;
+
+    // Evitar sobrepago
+    if ($request->monto > $deuda) {
+
+        return back()
+            ->withInput()
+            ->with(
+                'error',
+                '⚠ Sobrepago detectado. Solo puede cancelar Bs ' . number_format($deuda, 2)
+            );
+    }
+
+    $totalPagado = $pagado + $request->monto;
+
+    $estado = $totalPagado >= $costo
+        ? 'Pagado'
+        : 'Pendiente';
+
+    Pago::create([
+
+        'registro_residencia_id' =>
+        $request->registro_residencia_id,
+
+        'monto' =>
+        $request->monto,
+
+        'fecha_pago' =>
+        $request->fecha_pago,
+
+        'metodo_pago' =>
+        $request->metodo_pago,
+
+        'estado' =>
+        $estado,
+    ]);
+
+    return redirect()
+        ->route('pagos.index')
+        ->with(
+            'success',
+            'Pago registrado correctamente'
+        );
     }
 
 
@@ -130,17 +191,71 @@ class PagoController extends Controller
             'registro_residencia_id' => 'required|exists:registro_residencias,id',
             'monto' => 'required|numeric|min:0',
             'fecha_pago' => 'required|date',
-            'metodo_pago' => 'required|string|max:50',
-            'estado' => 'required|string|max:20'
+            'metodo_pago' => 'required|string|max:50'
         ]);
 
         $pago = Pago::findOrFail($id);
 
-        $pago->update($request->all());
+        $registro = RegistroResidencia::with(
+            'habitacion',
+            'pagos'
+        )->findOrFail(
+            $request->registro_residencia_id
+        );
+
+        $costo = $registro->habitacion->costo_mensual;
+
+        // Suma de pagos excepto el actual
+        $pagado = Pago::where(
+            'registro_residencia_id',
+            $request->registro_residencia_id
+        )
+            ->where('id', '!=', $pago->id)
+            ->sum('monto');
+
+        $deuda = $costo - $pagado;
+
+        // Validar sobrepago
+        if ($request->monto > $deuda) {
+
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    '⚠ Sobrepago detectado. Solo puede cancelar Bs ' . number_format($deuda, 2)
+                );
+        }
+
+        $totalPagado = $pagado + $request->monto;
+
+        $estado = $totalPagado >= $costo
+            ? 'Pagado'
+            : 'Pendiente';
+
+        $pago->update([
+
+            'registro_residencia_id' =>
+            $request->registro_residencia_id,
+
+            'monto' =>
+            $request->monto,
+
+            'fecha_pago' =>
+            $request->fecha_pago,
+
+            'metodo_pago' =>
+            $request->metodo_pago,
+
+            'estado' =>
+            $estado,
+        ]);
 
         return redirect()
             ->route('pagos.index')
-            ->with('success', 'Pago actualizado correctamente');
+            ->with(
+                'success',
+                'Pago actualizado correctamente'
+            );
     }
 
 

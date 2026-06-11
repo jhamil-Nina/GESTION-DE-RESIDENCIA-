@@ -72,6 +72,4 @@ Route::middleware('auth')->group(function () {
         ->name('profile.destroy');
 });
 
-//RUTAS DE AUTENTICACION (REGISTRO, LOGIN, ETC) - PROPORCIONADAS POR BREEZE
-
 require __DIR__ . '/auth.php';

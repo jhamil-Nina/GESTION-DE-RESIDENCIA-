@@ -214,7 +214,7 @@ class RegistroResidenciaController extends Controller
             ->with('success', 'Registro eliminado correctamente');
     }
 
-    private function actualizarEstadoHabitacion($habitacionId)
+    private function actualizarEstadoHabitacion(int|string $habitacionId)
     {
         $habitacion = Habitacion::find($habitacionId);
 

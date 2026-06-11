@@ -20,8 +20,6 @@ class CategoriaOcupacionController extends Controller
                     ->orWhere('id', $buscar);
             })
 
-            ->orderBy('id', 'desc')
-
             ->get();
 
         return view('categoria_ocupacions.index', compact('categorias', 'buscar'));

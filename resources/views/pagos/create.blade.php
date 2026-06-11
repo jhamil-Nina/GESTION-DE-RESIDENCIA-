@@ -10,6 +10,16 @@
 
     <div class="bg-white p-6 rounded-b-xl shadow">
 
+        @if(session('error'))
+
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+
+            {{ session('error') }}
+
+        </div>
+
+        @endif
+
         <form action="{{ route('pagos.store') }}" method="POST">
 
             @csrf
@@ -26,7 +36,14 @@
 
                     <option value="{{ $registro->id }}">
 
-                        {{ $registro->user->name }} - Hab {{ $registro->habitacion->numero }}
+                        @php
+                        $costo = $registro->habitacion->costo_mensual;
+                        $pagado = $registro->pagos->sum('monto');
+                        $deuda = $costo - $pagado;
+                        @endphp
+
+                        {{ $registro->user->name }}
+                        ....................................................................................................... Debe Bs {{ number_format($deuda,2) }} 
 
                     </option>
 
@@ -63,19 +80,6 @@
                     <option>Efectivo</option>
                     <option>Transferencia</option>
                     <option>QR</option>
-
-                </select>
-
-            </div>
-
-            <div class="mb-6">
-
-                <label class="block font-semibold mb-2">Estado</label>
-
-                <select name="estado" class="w-full border rounded-lg px-4 py-2">
-
-                    <option>Pagado</option>
-                    <option>Pendiente</option>
 
                 </select>
 

@@ -132,7 +132,7 @@
 
             <div
                 class="bg-blue-600 h-4 rounded-full"
-                style="width: {{ $porcentajeOcupacion . '%' }}">
+                style="width: {{ $porcentajeOcupacion . '%' }};">
             </div>
 
         </div>
@@ -221,10 +221,19 @@
                     Nueva Observación
                 </a>
 
+                <a href="{{ route('registro_residencias.create') }}"
+                    class="bg-indigo-600 text-white p-4 rounded-xl text-center hover:bg-indigo-700">
+                    Registrar Residencia
+                </a>
+
+                <a href="{{ route('antecedentes.create') }}"
+                    class="bg-red-600 text-white p-4 rounded-xl text-center hover:bg-red-700">
+                    Registrar Antecedente
+                </a>
+
             </div>
 
         </div>
-
     </div>
 
 </div>

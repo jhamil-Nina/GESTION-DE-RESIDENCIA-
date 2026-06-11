@@ -14,6 +14,17 @@
 
     <div class="bg-white p-6 rounded-b-xl shadow">
 
+        @if(session('error'))
+
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
+
+            <strong>Error:</strong>
+            {{ session('error') }}
+
+        </div>
+
+        @endif
+
         <form action="{{ route('registro_residencias.store') }}" method="POST">
 
             @csrf
