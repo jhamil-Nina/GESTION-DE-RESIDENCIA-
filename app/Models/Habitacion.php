@@ -13,6 +13,7 @@ class Habitacion extends Model
         'estado',
         'residencia_id'
     ];
+
     // RELACIONES
 
     public function residencia()
@@ -22,6 +23,15 @@ class Habitacion extends Model
 
     public function registrosResidencia()
     {
-        return $this->hasMany(RegistroResidencia::class);
+        return $this->hasMany(
+            \App\Models\RegistroResidencia::class,
+            'habitacion_id'
+        );
     }
-} 
+
+    // Una habitación puede tener varias observaciones
+    public function observaciones()
+    {
+        return $this->hasMany(Observacion::class);
+    }
+}

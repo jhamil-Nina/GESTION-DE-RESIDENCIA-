@@ -82,24 +82,32 @@
             </div>
 
 
+
             <!-- HABITACION -->
             <div class="mb-4">
 
-                <label class="font-semibold block mb-2">Habitación</label>
+                <label class="font-semibold block mb-2">
+                    Habitación
+                </label>
 
-                <select name="habitacion_id" class="w-full border rounded-lg px-4 py-2">
+                <select
+                    name="habitacion_id"
+                    id="habitacion_id"
+                    required
+                    class="w-full border rounded-lg px-4 py-2">
 
-                    <option value="">Seleccione</option>
+                    <option value="">Seleccione una habitación</option>
 
                     @foreach($habitacions as $habitacion)
 
-                    <option
-                        value="{{ $habitacion->id }}"
-                        data-residencia="{{ $habitacion->residencia_id }}">
+                        <option
+                            value="{{ $habitacion->id }}"
+                            data-residencia="{{ $habitacion->residencia_id }}"
+                            data-precio="{{ $habitacion->costo_mensual }}">
 
-                        Habitación {{ $habitacion->numero }}
+                            Habitación {{ $habitacion->numero }}
 
-                    </option>
+                        </option>
 
                     @endforeach
 
@@ -131,28 +139,80 @@
             </div>
 
 
-            <div class="mb-4">
 
-                <label class="font-semibold block mb-2">Fecha Ingreso</label>
+        {{-- FECHA DE INGRESO --}}
+        <div class="mb-4">
+            <label class="font-semibold block mb-2">
+                Fecha de Ingreso
+            </label>
 
-                <input
-                    type="date"
-                    name="fecha_ingreso"
-                    class="w-full border rounded-lg px-4 py-2">
+            <input
+                type="date"
+                name="fecha_ingreso"
+                id="fecha_ingreso"
+                value="{{ old('fecha_ingreso') }}"
+                required
+                class="w-full border rounded-lg px-4 py-2">
+
+            @error('fecha_ingreso')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- CANTIDAD DE MESES --}}
+        <div class="mb-4">
+            <label class="font-semibold block mb-2">
+                Cantidad de Meses
+            </label>
+
+            <input
+                type="number"
+                name="cantidad_meses"
+                id="cantidad_meses"
+                min="1"
+                step="1"
+                value="{{ old('cantidad_meses', 1) }}"
+                required
+                class="w-full border rounded-lg px-4 py-2">
+
+            @error('cantidad_meses')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- RESUMEN DEL COSTO --}}
+        <div class="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
+
+            <h3 class="font-semibold text-green-800 mb-3">
+                Resumen del Registro
+            </h3>
+
+            <div class="space-y-2 text-sm text-gray-700">
+
+                <p>
+                    <strong>Fecha de finalización:</strong>
+                    <span id="fecha_fin_calculada">—</span>
+                </p>
+
+                <p>
+                    <strong>Precio mensual:</strong>
+                    Bs <span id="precio_mensual">0.00</span>
+                </p>
+
+                <p>
+                    <strong>Meses contratados:</strong>
+                    <span id="meses_resumen">1</span>
+                </p>
+
+                <p class="text-lg font-bold text-green-700">
+                    Total a pagar:
+                    Bs <span id="monto_total">0.00</span>
+                </p>
 
             </div>
 
+        </div>
 
-            <div class="mb-6">
-
-                <label class="font-semibold block mb-2">Fecha Salida</label>
-
-                <input
-                    type="date"
-                    name="fecha_salida"
-                    class="w-full border rounded-lg px-4 py-2">
-
-            </div>
 
 
             <div class="flex justify-end gap-3">
@@ -206,30 +266,117 @@
     });
 </script>
 
+
 <script>
-    const residencia =
-        document.getElementById('residencia_id');
+document.addEventListener('DOMContentLoaded', function () {
 
-    const habitaciones =
-        document.querySelector('[name="habitacion_id"]');
+    const residencia = document.getElementById('residencia_id');
+    const habitaciones = document.querySelector('[name="habitacion_id"]');
 
-    residencia.addEventListener('change', function() {
+    // Guardar las habitaciones originales
+    const opcionesOriginales = Array.from(habitaciones.options)
+        .filter(opcion => opcion.value !== '')
+        .map(opcion => ({
+            value: opcion.value,
+            texto: opcion.textContent.trim(),
+            residencia: opcion.dataset.residencia,
+            precio: opcion.dataset.precio
+        }));
 
-        const residenciaSeleccionada = this.value;
+    function filtrarHabitaciones() {
 
-        Array.from(habitaciones.options).forEach(opcion => {
+        const residenciaSeleccionada = residencia.value;
 
-            if (opcion.value === '') {
-                opcion.hidden = false;
-                return;
+        // Limpiar las opciones anteriores
+        habitaciones.innerHTML = '<option value="">Seleccione una habitación</option>';
+
+        // Agregar únicamente habitaciones de la residencia seleccionada
+        opcionesOriginales.forEach(opcion => {
+
+            if (opcion.residencia === residenciaSeleccionada) {
+
+                const nuevaOpcion = document.createElement('option');
+
+                nuevaOpcion.value = opcion.value;
+                nuevaOpcion.textContent = opcion.texto;
+                nuevaOpcion.dataset.precio = opcion.precio;
+
+                habitaciones.appendChild(nuevaOpcion);
             }
 
-            opcion.hidden =
-                opcion.dataset.residencia !== residenciaSeleccionada;
         });
 
-        habitaciones.value = '';
-    });
+        // Actualizar el resumen del costo
+        habitaciones.dispatchEvent(new Event('change'));
+    }
+
+    residencia.addEventListener('change', filtrarHabitaciones);
+
+    // Filtrar también al cargar la página
+    filtrarHabitaciones();
+
+});
 </script>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const habitacion = document.querySelector('[name="habitacion_id"]');
+    const fechaIngreso = document.getElementById('fecha_ingreso');
+    const cantidadMeses = document.getElementById('cantidad_meses');
+
+    const precioMensual = document.getElementById('precio_mensual');
+    const mesesResumen = document.getElementById('meses_resumen');
+    const montoTotal = document.getElementById('monto_total');
+    const fechaFin = document.getElementById('fecha_fin_calculada');
+
+    function calcular() {
+        const opcion = habitacion.options[habitacion.selectedIndex];
+        const precio = Number(opcion?.dataset.precio || 0);
+        const meses = Number(cantidadMeses.value);
+
+        precioMensual.textContent = precio.toFixed(2);
+        mesesResumen.textContent = meses > 0 ? meses : '—';
+
+        const mesesValidos = Number.isSafeInteger(meses) && meses >= 1;
+
+        montoTotal.textContent = mesesValidos
+            ? (precio * meses).toFixed(2)
+            : '0.00';
+
+        fechaFin.textContent = '—';
+
+        if (fechaIngreso.value && mesesValidos) {
+            const [anio, mes, dia] = fechaIngreso.value.split('-').map(Number);
+
+            // Avanzar meses y ajustar al último día válido
+            const destino = new Date(Date.UTC(anio, mes - 1 + meses, 1));
+            const ultimoDia = new Date(Date.UTC(
+                destino.getUTCFullYear(),
+                destino.getUTCMonth() + 1,
+                0
+            )).getUTCDate();
+
+            destino.setUTCDate(Math.min(dia, ultimoDia));
+
+            fechaFin.textContent = destino.toLocaleDateString('es-BO', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                timeZone: 'UTC'
+            });
+        }
+    }
+
+    habitacion.addEventListener('change', calcular);
+    fechaIngreso.addEventListener('change', calcular);
+    cantidadMeses.addEventListener('input', calcular);
+
+    calcular();
+});
+</script>
+
 
 @endsection

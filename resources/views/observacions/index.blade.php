@@ -1,18 +1,19 @@
+
 @extends('layouts.app')
 
 @section('content')
 
-<div class="max-w-7xl mx-auto">
+<div class="max-w-7xl mx-auto px-4">
 
     {{-- HEADER --}}
     <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-6 rounded-t-xl text-white">
 
-        <h2 class="text-2xl font-bold flex items-center gap-2">
-            📋 Lista de Observaciones
+        <h2 class="text-2xl font-bold">
+            📋 Gestión de Observaciones
         </h2>
 
-        <p class="text-sm opacity-90">
-            Administración de observaciones disciplinarias
+        <p class="text-sm opacity-90 mt-1">
+            Control de daños y mantenimiento de habitaciones
         </p>
 
     </div>
@@ -22,16 +23,34 @@
 
         {{-- MENSAJE --}}
         @if(session('success'))
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-            {{ session('success') }}
-        </div>
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-5">
+                {{ session('success') }}
+            </div>
         @endif
 
-        {{-- BOTÓN NUEVO --}}
-        <div class="flex justify-end mb-6">
+        {{-- BUSCADOR Y BOTÓN --}}
+        <div class="flex flex-col md:flex-row justify-between gap-4 mb-6">
+
+            <form action="{{ route('observacions.index') }}" method="GET"
+                  class="flex gap-2 w-full md:w-auto">
+
+                <input
+                    type="text"
+                    name="buscar"
+                    value="{{ $buscar }}"
+                    placeholder="Buscar habitación o daño..."
+                    class="w-full md:w-72 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500">
+
+                <button
+                    type="submit"
+                    class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
+                    Buscar
+                </button>
+
+            </form>
 
             <a href="{{ route('observacions.create') }}"
-                class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg shadow">
+            class="inline-flex items-center justify-center self-start md:self-auto bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow text-sm font-medium whitespace-nowrap">
 
                 + Nueva Observación
 
@@ -42,18 +61,17 @@
         {{-- TABLA --}}
         <div class="overflow-x-auto">
 
-            <table class="w-full border rounded-lg overflow-hidden">
+            <table class="w-full border border-gray-200 rounded-lg overflow-hidden">
 
-                <thead class="bg-gray-100">
+                <thead class="bg-gray-100 text-gray-700">
 
                     <tr>
-
                         <th class="text-left px-4 py-3">ID</th>
-                        <th class="text-left px-4 py-3">Usuario</th>
                         <th class="text-left px-4 py-3">Habitación</th>
+                        <th class="text-left px-4 py-3">Descripción</th>
                         <th class="text-left px-4 py-3">Fecha</th>
+                        <th class="text-center px-4 py-3">Estado</th>
                         <th class="text-center px-4 py-3">Acciones</th>
-
                     </tr>
 
                 </thead>
@@ -62,80 +80,92 @@
 
                     @forelse($observaciones as $observacion)
 
-                    <tr class="border-t hover:bg-gray-50">
+                        <tr class="border-t hover:bg-gray-50">
 
-                        <td class="px-4 py-3">
-                            {{ $observacion->id }}
-                        </td>
+                            <td class="px-4 py-3">
+                                {{ $observacion->id }}
+                            </td>
 
-                        <td class="px-4 py-3">
-                            {{ $observacion->registroResidencia->user->name }}
-                        </td>
+                            <td class="px-4 py-3 font-medium">
+                                Habitación {{ $observacion->habitacion->numero }}
+                            </td>
 
-                        <td class="px-4 py-3">
-                            Habitación {{ $observacion->registroResidencia->habitacion->numero }}
-                        </td>
+                            <td class="px-4 py-3 text-gray-700">
+                                {{ \Illuminate\Support\Str::limit($observacion->descripcion, 55) }}
+                            </td>
 
-                        <td class="px-4 py-3">
-                            {{ $observacion->fecha }}
-                        </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                {{ \Carbon\Carbon::parse($observacion->fecha)->format('d/m/Y') }}
+                            </td>
 
-                        <td class="px-4 py-3">
+                            {{-- ESTADO --}}
+                            <td class="px-4 py-3 text-center">
 
-                            <div class="flex items-center justify-center gap-2">
+                                @if($observacion->estado === 'Pendiente')
 
-                                {{-- VER --}}
-                                <a href="{{ route('observacions.show', $observacion) }}"
-                                    class="flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 text-sm font-medium">
+                                    <span class="inline-block bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold">
+                                        Pendiente
+                                    </span>
 
-                                    Ver
+                                @elseif($observacion->estado === 'En reparación')
 
-                                </a>
+                                    <span class="inline-block bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-semibold">
+                                        En reparación
+                                    </span>
 
-                                {{-- EDITAR --}}
-                                <a href="{{ route('observacions.edit', $observacion) }}"
-                                    class="flex items-center gap-1 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 text-sm font-medium">
+                                @elseif($observacion->estado === 'Solucionado')
 
-                                    Editar
+                                    <span class="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+                                        Solucionado
+                                    </span>
 
-                                </a>
+                                @endif
 
-                                {{-- ELIMINAR --}}
-                                <form action="{{ route('observacions.destroy', $observacion) }}"
-                                    method="POST">
+                            </td>
 
-                                    @csrf
-                                    @method('DELETE')
+                            {{-- ACCIONES --}}
+                            <td class="px-4 py-3">
 
-                                    <button
-                                        type="submit"
-                                        onclick="return confirm('¿Eliminar observación?')"
-                                        class="flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-md transition duration-200 text-sm font-medium">
+                                <div class="flex flex-wrap items-center justify-center gap-2">
 
-                                        Eliminar
+                                    <a href="{{ route('observacions.show', $observacion) }}"
+                                       class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium">
+                                        Ver
+                                    </a>
 
-                                    </button>
+                                    <a href="{{ route('observacions.edit', $observacion) }}"
+                                       class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-lg text-sm font-medium">
+                                        Editar
+                                    </a>
 
-                                </form>
+                                    <form action="{{ route('observacions.destroy', $observacion) }}"
+                                          method="POST">
 
-                            </div>
+                                        @csrf
+                                        @method('DELETE')
 
-                        </td>
+                                        <button
+                                            type="submit"
+                                            onclick="return confirm('¿Está seguro de eliminar esta observación? Se perderá también su historial de residentes asociados.')"
+                                            class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-medium">
+                                            Eliminar
+                                        </button>
 
-                    </tr>
+                                    </form>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
 
                     @empty
 
-                    <tr>
-
-                        <td colspan="5"
-                            class="text-center py-6 text-gray-500">
-
-                            No existen observaciones registradas
-
-                        </td>
-
-                    </tr>
+                        <tr>
+                            <td colspan="6" class="text-center py-8 text-gray-500">
+                                No existen observaciones registradas.
+                            </td>
+                        </tr>
 
                     @endforelse
 
@@ -145,7 +175,8 @@
 
         </div>
 
-        <div class="mt-4 text-sm text-gray-500">
+        {{-- TOTAL --}}
+        <div class="mt-5 text-sm text-gray-500">
             Mostrando {{ $observaciones->count() }} observaciones
         </div>
 

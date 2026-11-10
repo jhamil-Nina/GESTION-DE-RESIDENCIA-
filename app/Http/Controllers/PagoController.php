@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pago;
+use App\Models\Mensualidad;
 use App\Models\RegistroResidencia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+use App\Models\Residencia;
 
 class PagoController extends Controller
 {
-
+    // LISTA DE PAGOS Y DEUDAS
     public function index(Request $request)
     {
         $buscar = $request->buscar;
@@ -16,42 +20,36 @@ class PagoController extends Controller
         $registros = RegistroResidencia::with([
             'user',
             'habitacion',
-            'pagos'
+            'pagos',
+            'mensualidades'
         ])
-
-            ->when($buscar, function ($query, $buscar) {
-
-                $query->whereHas('user', function ($q) use ($buscar) {
-                    $q->where('name', 'like', "%{$buscar}%");
-                })
-
-                    ->orWhereHas('habitacion', function ($q) use ($buscar) {
-                        $q->where('numero', 'like', "%{$buscar}%");
+            ->when($buscar, function ($query) use ($buscar) {
+                $query->where(function ($q) use ($buscar) {
+                    $q->whereHas('user', function ($sub) use ($buscar) {
+                        $sub->where('name', 'like', "%{$buscar}%");
+                    })
+                    ->orWhereHas('habitacion', function ($sub) use ($buscar) {
+                        $sub->where('numero', 'like', "%{$buscar}%");
                     });
+                });
             })
-
+            ->latest()
             ->get();
 
-        // Estadísticas
-        $totalRecaudado = 0;
-        $totalDeuda = 0;
-        $residentesConDeuda = 0;
+        $totalRecaudado = Pago::where('estado', 'Pagado')
+            ->sum('monto');
 
-        foreach ($registros as $registro) {
+        $totalDeuda = Mensualidad::where('estado', 'Pendiente')
+            ->sum('monto');
 
-            $costo = $registro->habitacion->costo_mensual;
-
-            $pagado = $registro->pagos->sum('monto');
-
-            $deuda = max(0, $costo - $pagado);
-
-            $totalRecaudado += $pagado;
-            $totalDeuda += $deuda;
-
-            if ($deuda > 0) {
-                $residentesConDeuda++;
+        $residentesConDeuda = RegistroResidencia::whereHas(
+            'mensualidades',
+            function ($query) {
+                $query->where('estado', 'Pendiente');
             }
-        }
+        )
+            ->distinct()
+            ->count('user_id');
 
         return view('pagos.index', compact(
             'registros',
@@ -62,103 +60,146 @@ class PagoController extends Controller
         ));
     }
 
-
-    // FORM CREAR
+    // FORMULARIO PARA REGISTRAR UN PAGO
     public function create()
     {
-        $registros = RegistroResidencia::with(
+        $residencias = Residencia::orderBy('nombre')->get();
+
+        $registros = RegistroResidencia::with([
             'user',
-            'habitacion',
-            'pagos'
-        )
-            ->get()
-            ->filter(function ($registro) {
+            'habitacion.residencia',
+            'mensualidades' => function ($query) {
+                $query->where('estado', 'Pendiente')
+                    ->orderBy('numero_mes');
+            }
+        ])
+            ->whereHas('mensualidades', function ($query) {
+                $query->where('estado', 'Pendiente');
+            })
+            ->latest()
+            ->get();
 
-                $costo = $registro->habitacion->costo_mensual;
-
-                $pagado = $registro->pagos->sum('monto');
-
-                return $pagado < $costo;
-            });
-
-        return view('pagos.create', compact('registros'));
+        return view('pagos.create', compact(
+            'residencias',
+            'registros'
+        ));
     }
 
-
-    // GUARDAR
+    // GUARDAR PAGO DE UNA O VARIAS MENSUALIDADES
     public function store(Request $request)
     {
-    $request->validate([
-        'registro_residencia_id' => 'required|exists:registro_residencias,id',
-        'monto' => 'required|numeric|min:0',
-        'fecha_pago' => 'required|date',
-        'metodo_pago' => 'required|string|max:50'
-    ]);
+        $datos = $request->validate([
+            'registro_residencia_id' =>
+                'required|exists:registro_residencias,id',
 
-    $registro = RegistroResidencia::with(
-        'habitacion',
-        'pagos'
-    )->findOrFail(
-        $request->registro_residencia_id
-    );
+            'mensualidades' =>
+                'required|array|min:1',
 
-    $costo = $registro->habitacion->costo_mensual;
+            'mensualidades.*' =>
+                'required|integer|distinct|exists:mensualidades,id',
 
-    $pagado = $registro->pagos->sum('monto');
+            'fecha_pago' =>
+                'required|date',
 
-    $deuda = $costo - $pagado;
+            'metodo_pago' =>
+                'required|string|in:Efectivo,Transferencia,QR',
+        ]);
 
-    // Evitar sobrepago
-    if ($request->monto > $deuda) {
+        DB::transaction(function () use ($datos) {
 
-        return back()
-            ->withInput()
+            // Bloquear el contrato para coordinar operaciones
+            $registro = RegistroResidencia::whereKey(
+                $datos['registro_residencia_id']
+            )
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            // Bloquear las mensualidades seleccionadas
+            $mensualidades = Mensualidad::where(
+                'registro_residencia_id',
+                $registro->id
+            )
+                ->whereIn('id', $datos['mensualidades'])
+                ->orderBy('id')
+                ->lockForUpdate()
+                ->get();
+
+            // Verificar que todas pertenezcan al contrato
+            if (
+                $mensualidades->count() !==
+                count($datos['mensualidades'])
+            ) {
+                throw ValidationException::withMessages([
+                    'mensualidades' =>
+                        'Una o varias mensualidades no pertenecen al contrato seleccionado.'
+                ]);
+            }
+
+            // Evitar cobrar mensualidades ya pagadas
+            if ($mensualidades->contains(
+                fn ($mensualidad) => $mensualidad->estado !== 'Pendiente'
+            )) {
+                throw ValidationException::withMessages([
+                    'mensualidades' =>
+                        'Una o varias mensualidades ya fueron pagadas.'
+                ]);
+            }
+
+            // Calcular el monto en el servidor
+            $montoTotal = round(
+                $mensualidades->sum('monto'),
+                2
+            );
+
+            if ($montoTotal <= 0) {
+                throw ValidationException::withMessages([
+                    'mensualidades' =>
+                        'El monto total debe ser mayor a cero.'
+                ]);
+            }
+
+            // Crear el pago
+            $pago = Pago::create([
+                'registro_residencia_id' => $registro->id,
+                'monto' => $montoTotal,
+                'fecha_pago' => $datos['fecha_pago'],
+                'metodo_pago' => $datos['metodo_pago'],
+                'estado' => 'Pagado',
+            ]);
+
+            // Relacionar cada mensualidad con el pago
+            foreach ($mensualidades as $mensualidad) {
+
+                $pago->mensualidades()->attach(
+                    $mensualidad->id,
+                    [
+                        'monto_aplicado' => $mensualidad->monto
+                    ]
+                );
+
+                $mensualidad->update([
+                    'estado' => 'Pagado'
+                ]);
+            }
+
+        }, 3);
+
+        return redirect()
+            ->route('pagos.index')
             ->with(
-                'error',
-                '⚠ Sobrepago detectado. Solo puede cancelar Bs ' . number_format($deuda, 2)
+                'success',
+                'Pago registrado correctamente. Las mensualidades seleccionadas fueron canceladas.'
             );
     }
 
-    $totalPagado = $pagado + $request->monto;
-
-    $estado = $totalPagado >= $costo
-        ? 'Pagado'
-        : 'Pendiente';
-
-    Pago::create([
-
-        'registro_residencia_id' =>
-        $request->registro_residencia_id,
-
-        'monto' =>
-        $request->monto,
-
-        'fecha_pago' =>
-        $request->fecha_pago,
-
-        'metodo_pago' =>
-        $request->metodo_pago,
-
-        'estado' =>
-        $estado,
-    ]);
-
-    return redirect()
-        ->route('pagos.index')
-        ->with(
-            'success',
-            'Pago registrado correctamente'
-        );
-    }
-
-
-    // MOSTRAR
+    // VER DETALLE DE UN PAGO
     public function show(string $id)
     {
-        $pago = Pago::with(
+        $pago = Pago::with([
             'registroResidencia.user',
-            'registroResidencia.habitacion'
-        )->findOrFail($id);
+            'registroResidencia.habitacion',
+            'mensualidades'
+        ])->findOrFail($id);
 
         $historialPagos = Pago::where(
             'registro_residencia_id',
@@ -167,107 +208,48 @@ class PagoController extends Controller
             ->orderBy('fecha_pago', 'desc')
             ->get();
 
-        return view(
-            'pagos.show',
-            compact('pago', 'historialPagos')
-        );
+        return view('pagos.show', compact(
+            'pago',
+            'historialPagos'
+        ));
     }
 
-    // FORM EDITAR
+    // PROTEGER EDICIÓN DE PAGOS REGISTRADOS
     public function edit(string $id)
     {
-        $pago = Pago::findOrFail($id);
-
-        $registros = RegistroResidencia::with('user', 'habitacion')->get();
-
-        return view('pagos.edit', compact('pago', 'registros'));
-    }
-
-
-    // ACTUALIZAR
-    public function update(Request $request, string $id)
-    {
-        $request->validate([
-            'registro_residencia_id' => 'required|exists:registro_residencias,id',
-            'monto' => 'required|numeric|min:0',
-            'fecha_pago' => 'required|date',
-            'metodo_pago' => 'required|string|max:50'
-        ]);
-
-        $pago = Pago::findOrFail($id);
-
-        $registro = RegistroResidencia::with(
-            'habitacion',
-            'pagos'
-        )->findOrFail(
-            $request->registro_residencia_id
-        );
-
-        $costo = $registro->habitacion->costo_mensual;
-
-        // Suma de pagos excepto el actual
-        $pagado = Pago::where(
-            'registro_residencia_id',
-            $request->registro_residencia_id
-        )
-            ->where('id', '!=', $pago->id)
-            ->sum('monto');
-
-        $deuda = $costo - $pagado;
-
-        // Validar sobrepago
-        if ($request->monto > $deuda) {
-
-            return back()
-                ->withInput()
-                ->with(
-                    'error',
-                    '⚠ Sobrepago detectado. Solo puede cancelar Bs ' . number_format($deuda, 2)
-                );
-        }
-
-        $totalPagado = $pagado + $request->monto;
-
-        $estado = $totalPagado >= $costo
-            ? 'Pagado'
-            : 'Pendiente';
-
-        $pago->update([
-
-            'registro_residencia_id' =>
-            $request->registro_residencia_id,
-
-            'monto' =>
-            $request->monto,
-
-            'fecha_pago' =>
-            $request->fecha_pago,
-
-            'metodo_pago' =>
-            $request->metodo_pago,
-
-            'estado' =>
-            $estado,
-        ]);
+        Pago::findOrFail($id);
 
         return redirect()
             ->route('pagos.index')
             ->with(
-                'success',
-                'Pago actualizado correctamente'
+                'error',
+                'Los pagos registrados no pueden editarse directamente.'
             );
     }
 
-
-    // ELIMINAR
-    public function destroy(string $id)
+    // PROTEGER ACTUALIZACIÓN DE PAGOS
+    public function update(Request $request, string $id)
     {
-        $pago = Pago::findOrFail($id);
-
-        $pago->delete();
+        Pago::findOrFail($id);
 
         return redirect()
             ->route('pagos.index')
-            ->with('success', 'Pago eliminado correctamente');
+            ->with(
+                'error',
+                'No se permite modificar pagos registrados. Se requiere un procedimiento de anulación.'
+            );
     }
-} 
+
+    // PROTEGER ELIMINACIÓN DE PAGOS
+    public function destroy(string $id)
+    {
+        Pago::findOrFail($id);
+
+        return redirect()
+            ->route('pagos.index')
+            ->with(
+                'error',
+                'No se permite eliminar pagos registrados para proteger el historial financiero.'
+            );
+    }
+}

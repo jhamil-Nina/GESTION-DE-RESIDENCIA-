@@ -11,7 +11,18 @@ class RegistroResidencia extends Model
         'habitacion_id',
         'categoria_ocupacion_id',
         'fecha_ingreso',
-        'fecha_salida'
+        'fecha_salida',
+        'cantidad_meses',
+        'precio_mensual',
+        'monto_total'
+    ];
+
+    protected $casts = [
+        'fecha_ingreso' => 'date',
+        'fecha_salida' => 'date',
+        'cantidad_meses' => 'integer',
+        'precio_mensual' => 'decimal:2',
+        'monto_total' => 'decimal:2',
     ];
 
     // RELACIONES
@@ -31,14 +42,27 @@ class RegistroResidencia extends Model
         return $this->belongsTo(CategoriaOcupacion::class);
     }
 
+    // Un registro puede tener varios pagos
     public function pagos()
     {
-        return $this->hasMany(Pago::class);
+        return $this->hasMany(Pago::class, 'registro_residencia_id');
     }
 
+    // Un registro puede tener varias mensualidades
+    public function mensualidades()
+    {
+        return $this->hasMany(Mensualidad::class, 'registro_residencia_id');
+    }
+
+    // Observaciones históricas vinculadas al residente
     public function observaciones()
     {
-        return $this->hasMany(Observacion::class);
+        return $this->belongsToMany(
+            Observacion::class,
+            'observacion_residentes',
+            'registro_residencia_id',
+            'observacion_id'
+        );
     }
 }
- 
+
