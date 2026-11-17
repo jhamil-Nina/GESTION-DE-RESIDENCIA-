@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController; // controlador del perfil (Breeze)
 // CONTROLADORES DEL CRUD
 use App\Http\Controllers\CategoriaOcupacionController; // controlador de categorias
 use App\Http\Controllers\ResidenciaController; // controlador de residencias
+use App\Http\Controllers\TipoHabitacionController;
 use App\Http\Controllers\HabitacionController; // controlador de habitaciones
 use App\Http\Controllers\UserController; // controlador de usuarios
 use App\Http\Controllers\RegistroResidenciaController; // controlador de registros de residencia
@@ -32,6 +33,9 @@ Route::resource('residencias', ResidenciaController::class);
 //CRUD DE HABITACION
 
 Route::resource('habitacions', HabitacionController::class);
+Route::resource('tipos_habitacion', TipoHabitacionController::class)
+    ->parameters(['tipos_habitacion' => 'tipo'])
+    ->except('show');
 
 // CRUD DE USERS
 

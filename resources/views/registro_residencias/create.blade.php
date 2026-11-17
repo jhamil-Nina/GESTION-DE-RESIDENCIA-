@@ -43,7 +43,8 @@
                     <option
                         value="{{ $user->id }}"
                         data-categoria-id="{{ $user->categoria_ocupacion_id }}"
-                        data-categoria="{{ $user->categoriaOcupacion->nombre ?? '' }}">
+                        data-categoria="{{ $user->categoriaOcupacion->nombre ?? '' }}"
+                        @selected(old('user_id') == $user->id)>
 
                         {{ $user->name }}
 
@@ -57,7 +58,7 @@
 
             <div class="mb-4">
 
-                <label class="font-semibold block mb-2">
+                <label for="residencia_id" class="font-semibold block mb-2">
                     Residencia
                 </label>
 
@@ -83,10 +84,17 @@
 
 
 
+            <div class="mb-4">
+                <label for="tipo_habitacion_id" class="font-semibold block mb-2">Tipo de habitación</label>
+                <select id="tipo_habitacion_id" disabled class="w-full border rounded-lg px-4 py-2">
+                    <option value="">Seleccione primero una residencia</option>
+                </select>
+            </div>
+
             <!-- HABITACION -->
             <div class="mb-4">
 
-                <label class="font-semibold block mb-2">
+                <label for="habitacion_id" class="font-semibold block mb-2">
                     Habitación
                 </label>
 
@@ -103,7 +111,10 @@
                         <option
                             value="{{ $habitacion->id }}"
                             data-residencia="{{ $habitacion->residencia_id }}"
-                            data-precio="{{ $habitacion->costo_mensual }}">
+                            data-tipo="{{ $habitacion->tipo_habitacion_id ?? 'sin-tipo' }}"
+                            data-nombre-tipo="{{ $habitacion->tipoHabitacion?->nombre ?? 'Sin tipo asignado' }}"
+                            data-precio="{{ $habitacion->costo_mensual }}"
+                            @selected(old('habitacion_id') == $habitacion->id)>
 
                             Habitación {{ $habitacion->numero }}
 
@@ -112,6 +123,10 @@
                     @endforeach
 
                 </select>
+
+                @error('habitacion_id')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
 
             </div>
 
@@ -263,6 +278,8 @@
 
         });
 
+        usuario.dispatchEvent(new Event('change'));
+
     });
 </script>
 
@@ -271,50 +288,53 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     const residencia = document.getElementById('residencia_id');
-    const habitaciones = document.querySelector('[name="habitacion_id"]');
+    const tipo = document.getElementById('tipo_habitacion_id');
+    const habitaciones = document.getElementById('habitacion_id');
+    const opciones = Array.from(habitaciones.options).filter(opcion => opcion.value);
+    const habitacionAnterior = opciones.find(opcion => opcion.value === habitaciones.value);
 
-    // Guardar las habitaciones originales
-    const opcionesOriginales = Array.from(habitaciones.options)
-        .filter(opcion => opcion.value !== '')
-        .map(opcion => ({
-            value: opcion.value,
-            texto: opcion.textContent.trim(),
-            residencia: opcion.dataset.residencia,
-            precio: opcion.dataset.precio
-        }));
+    function actualizarHabitaciones(habitacionSeleccionada = '') {
+        const coincidencias = opciones.filter(opcion =>
+            opcion.dataset.residencia === residencia.value && opcion.dataset.tipo === tipo.value
+        );
 
-    function filtrarHabitaciones() {
-
-        const residenciaSeleccionada = residencia.value;
-
-        // Limpiar las opciones anteriores
-        habitaciones.innerHTML = '<option value="">Seleccione una habitación</option>';
-
-        // Agregar únicamente habitaciones de la residencia seleccionada
-        opcionesOriginales.forEach(opcion => {
-
-            if (opcion.residencia === residenciaSeleccionada) {
-
-                const nuevaOpcion = document.createElement('option');
-
-                nuevaOpcion.value = opcion.value;
-                nuevaOpcion.textContent = opcion.texto;
-                nuevaOpcion.dataset.precio = opcion.precio;
-
-                habitaciones.appendChild(nuevaOpcion);
-            }
-
-        });
-
-        // Actualizar el resumen del costo
+        const mensaje = tipo.value ? 'Seleccione una habitación' : 'Seleccione primero un tipo';
+        habitaciones.replaceChildren(new Option(mensaje, ''), ...coincidencias);
+        habitaciones.disabled = coincidencias.length === 0;
+        habitaciones.value = coincidencias.some(opcion => opcion.value === habitacionSeleccionada)
+            ? habitacionSeleccionada
+            : '';
         habitaciones.dispatchEvent(new Event('change'));
     }
 
-    residencia.addEventListener('change', filtrarHabitaciones);
+    function actualizarTipos(tipoSeleccionado = '', habitacionSeleccionada = '') {
+        const tipos = new Map();
+        for (const opcion of opciones) {
+            if (opcion.dataset.residencia === residencia.value) {
+                tipos.set(opcion.dataset.tipo, opcion.dataset.nombreTipo);
+            }
+        }
 
-    // Filtrar también al cargar la página
-    filtrarHabitaciones();
+        let mensaje = 'Seleccione primero una residencia';
+        if (residencia.value) {
+            mensaje = tipos.size ? 'Seleccione un tipo' : 'Esta residencia no tiene habitaciones';
+        }
+        tipo.replaceChildren(new Option(mensaje, ''));
+        for (const [id, nombre] of tipos) {
+            tipo.add(new Option(nombre, id));
+        }
+        tipo.disabled = tipos.size === 0;
+        tipo.value = tipos.has(tipoSeleccionado) ? tipoSeleccionado : '';
+        actualizarHabitaciones(habitacionSeleccionada);
+    }
 
+    residencia.addEventListener('change', () => actualizarTipos());
+    tipo.addEventListener('change', () => actualizarHabitaciones());
+
+    if (habitacionAnterior) {
+        residencia.value = habitacionAnterior.dataset.residencia;
+    }
+    actualizarTipos(habitacionAnterior?.dataset.tipo, habitacionAnterior?.value);
 });
 </script>
 

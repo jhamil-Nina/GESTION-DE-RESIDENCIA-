@@ -84,8 +84,10 @@
                     </th>
 
                     <th class="text-center px-4 py-3">
-                        Capacidad
+                        Máximo de residentes
                     </th>
+
+                    <th class="text-center px-4 py-3">Máximo de habitaciones</th>
 
                     <th class="text-center px-4 py-3">
                         Acciones
@@ -116,6 +118,9 @@
 
                     <td class="px-4 py-3 text-center">
                         {{ $residencia->capacidad }}
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        {{ $residencia->max_habitaciones ?? 'Sin definir' }}
                     </td>
 
                     <td class="px-4 py-3">
@@ -167,7 +172,7 @@
 
                 <tr>
 
-                    <td colspan="5" class="text-center py-6 text-gray-500">
+                    <td colspan="6" class="text-center py-6 text-gray-500">
 
                         No hay residencias registradas
 

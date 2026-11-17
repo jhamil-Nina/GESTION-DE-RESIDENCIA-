@@ -52,12 +52,17 @@
 
             <div>
                 <p class="text-gray-500 text-sm">
-                    Capacidad
+                    Capacidad máxima de residentes
                 </p>
 
                 <p class="font-semibold">
                     {{ $residencia->capacidad }}
                 </p>
+            </div>
+
+            <div>
+                <p class="text-gray-500 text-sm">Máximo de habitaciones</p>
+                <p class="font-semibold">{{ $residencia->max_habitaciones ?? 'Sin definir' }}</p>
             </div>
 
         </div>

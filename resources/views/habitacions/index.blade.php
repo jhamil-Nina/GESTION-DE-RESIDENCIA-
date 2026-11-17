@@ -56,6 +56,10 @@
             </form>
 
             <!-- BOTON -->
+            <a href="{{ route('tipos_habitacion.index') }}" class="px-4 py-2 text-blue-700">
+                Tipos de habitación
+            </a>
+
             <a href="{{ route('habitacions.create') }}"
                 class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg shadow">
 
@@ -91,6 +95,7 @@
 
                     <tr>
                         <th class="px-4 py-3 text-left">Número</th>
+                        <th class="px-4 py-3 text-center">Tipo</th>
                         <th class="px-4 py-3 text-center">Capacidad</th>
                         <th class="px-4 py-3 text-center">Costo</th>
                         <th class="px-4 py-3 text-center">Estado</th>
@@ -107,6 +112,10 @@
 
                         <td class="px-4 py-3">
                             {{ $habitacion->numero }}
+                        </td>
+
+                        <td class="px-4 py-3 text-center">
+                            {{ $habitacion->tipoHabitacion?->nombre ?? 'Sin asignar' }}
                         </td>
 
                         <td class="px-4 py-3 text-center">
@@ -129,12 +138,6 @@
 
                             <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm">
                                 Ocupada
-                            </span>
-
-                            @else
-
-                            <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm">
-                                Mantenimiento
                             </span>
 
                             @endif

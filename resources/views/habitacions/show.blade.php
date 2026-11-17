@@ -51,8 +51,13 @@
             </div>
 
             <div>
+                <p class="text-gray-500 text-sm">Tipo de habitación</p>
+                <p class="font-semibold">{{ $habitacion->tipoHabitacion?->nombre ?? 'Sin asignar' }}</p>
+            </div>
+
+            <div>
                 <p class="text-gray-500 text-sm">
-                    Costo Mensual
+                    Tarifa mensual por residente
                 </p>
 
                 <p class="font-semibold text-green-600">

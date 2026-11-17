@@ -136,7 +136,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
 
             <div class="bg-blue-50 rounded-xl p-4">
                 <p class="text-sm text-gray-600">Ocupadas</p>
@@ -149,13 +149,6 @@
                 <p class="text-sm text-gray-600">Libres</p>
                 <p class="text-2xl font-bold text-green-700">
                     {{ $habitacionesDisponibles }}
-                </p>
-            </div>
-
-            <div class="bg-amber-50 rounded-xl p-4">
-                <p class="text-sm text-gray-600">Mantenimiento</p>
-                <p class="text-2xl font-bold text-amber-700">
-                    {{ $habitacionesMantenimiento }}
                 </p>
             </div>
 

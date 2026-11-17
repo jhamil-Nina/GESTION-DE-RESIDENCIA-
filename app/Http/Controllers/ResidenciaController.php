@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Residencia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
-class ResidenciaController extends Controller    
+class ResidenciaController extends Controller
 {
 
     // LISTAR
@@ -25,8 +27,6 @@ class ResidenciaController extends Controller
                     ->orWhere('id', $buscar);
             })
 
-            // Orden de la lista - desde el más reciente al primero
-            ->orderBy('id', 'desc')
 
             // Obtener registros
             ->get();
@@ -46,18 +46,14 @@ class ResidenciaController extends Controller
     public function store(Request $request)
     {
         // VALIDACIONES
-        $request->validate([
+        $datos = $request->validate([
             'nombre' => 'required|string|max:255',
             'direccion' => 'required|string|max:255',
-            'capacidad' => 'required|integer|min:1'
+            'capacidad' => 'required|integer|min:1',
+            'max_habitaciones' => 'required|integer|min:1|max:2147483647',
         ]);
 
-        // GUARDAR
-        Residencia::create([
-            'nombre' => $request->nombre,
-            'direccion' => $request->direccion,
-            'capacidad' => $request->capacidad,
-        ]);
+        Residencia::create($datos);
 
         return redirect()->route('residencias.index')
             ->with('success', 'Residencia creada correctamente');
@@ -86,21 +82,30 @@ class ResidenciaController extends Controller
     public function update(Request $request, int $id)
     {
         // VALIDACIONES
-        $request->validate([
+        $datos = $request->validate([
             'nombre' => 'required|string|max:255',
             'direccion' => 'required|string|max:255',
-            'capacidad' => 'required|integer|min:1'
+            'capacidad' => 'required|integer|min:1',
+            'max_habitaciones' => 'required|integer|min:1|max:2147483647',
         ]);
 
-        // BUSCAR
-        $residencia = Residencia::findOrFail($id);
+        DB::transaction(function () use ($id, $datos) {
+            $residencia = Residencia::lockForUpdate()->findOrFail($id);
 
-        // ACTUALIZAR
-        $residencia->update([
-            'nombre' => $request->nombre,
-            'direccion' => $request->direccion,
-            'capacidad' => $request->capacidad,
-        ]);
+            if ($residencia->habitacions()->count() > $datos['max_habitaciones']) {
+                throw ValidationException::withMessages([
+                    'max_habitaciones' => 'El máximo debe cubrir las habitaciones ya registradas.',
+                ]);
+            }
+
+            if ($residencia->habitacions()->sum('capacidad') > $datos['capacidad']) {
+                throw ValidationException::withMessages([
+                    'capacidad' => 'La capacidad debe cubrir las plazas de las habitaciones registradas.',
+                ]);
+            }
+
+            $residencia->update($datos);
+        }, 3);
 
         return redirect()->route('residencias.index')
             ->with('success', 'Residencia actualizada correctamente');
@@ -120,4 +125,3 @@ class ResidenciaController extends Controller
             ->with('success', 'Residencia eliminada correctamente');
     }
 }
- 

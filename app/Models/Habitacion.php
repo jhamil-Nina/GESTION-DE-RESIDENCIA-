@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
 class Habitacion extends Model
@@ -11,8 +12,19 @@ class Habitacion extends Model
         'capacidad',
         'costo_mensual',
         'estado',
+        'tipo_habitacion_id',
         'residencia_id'
     ];
+
+    protected function costoMensual(): Attribute
+    {
+        return Attribute::get(fn ($valor) => $this->tipoHabitacion?->costo_mensual ?? $valor);
+    }
+
+    public function tipoHabitacion()
+    {
+        return $this->belongsTo(TipoHabitacion::class);
+    }
 
     // RELACIONES
 

@@ -25,7 +25,7 @@ class UserController extends Controller
                     ->orWhere('email', 'like', "%{$buscar}%");
             })
 
-            ->get();
+            ->get(); 
 
         return view('users.index', compact('users', 'buscar'));
     }

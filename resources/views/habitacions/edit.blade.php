@@ -53,6 +53,10 @@
 
             </div>
 
+            @error('capacidad')
+                <p class="text-red-600 mb-4">{{ $message }}</p>
+            @enderror
+
             <!-- RESIDENCIA -->
             <div class="mb-6">
 
@@ -68,7 +72,7 @@
 
                     <option
                         value="{{ $residencia->id }}"
-                        {{ $habitacion->residencia_id == $residencia->id ? 'selected' : '' }}>
+                        @selected(old('residencia_id', $habitacion->residencia_id) == $residencia->id)>
 
                         {{ $residencia->nombre }}
 
@@ -80,21 +84,11 @@
 
             </div>
 
-            <!-- COSTO MENSUAL -->
-            <div class="mb-4">
+            @error('residencia_id')
+                <p class="text-red-600 mb-4">{{ $message }}</p>
+            @enderror
 
-                <label class="block font-semibold mb-2">
-                    Costo Mensual (Bs)
-                </label>
-
-                <input
-                    type="number"
-                    step="0.01"
-                    name="costo_mensual"
-                    value="{{ old('costo_mensual', $habitacion->costo_mensual) }}"
-                    class="w-full border rounded-lg px-4 py-2">
-
-            </div>
+            @include('habitacions.tipo')
 
             <!-- BOTONES -->
             <div class="flex justify-end gap-3">

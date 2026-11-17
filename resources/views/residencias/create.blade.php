@@ -72,7 +72,7 @@
             <div class="mb-6">
 
                 <label class="block font-semibold mb-2">
-                    Capacidad
+                    Capacidad máxima de residentes
                 </label>
 
                 <input
@@ -88,6 +88,8 @@
                 @enderror
 
             </div>
+
+            @include('residencias.max_habitaciones')
 
             <!-- BOTONES -->
             <div class="flex justify-end gap-3">

@@ -34,7 +34,7 @@ class RegistroResidenciaController extends Controller
                     $q->where('name', 'like', "%$buscar%");
                 });
             })
-            ->latest()
+
             ->get();
 
         return view('registro_residencias.index', compact(
@@ -52,9 +52,7 @@ class RegistroResidenciaController extends Controller
 
         $residencias = Residencia::all();
 
-        $habitacions = Habitacion::with('residencia')
-            ->where('estado', '!=', 'Mantenimiento')
-            ->get();
+        $habitacions = Habitacion::with(['residencia', 'tipoHabitacion'])->get();
 
         return view('registro_residencias.create', compact(
             'users',
@@ -103,12 +101,6 @@ class RegistroResidenciaController extends Controller
             $habitacion = Habitacion::whereKey($datos['habitacion_id'])
                 ->lockForUpdate()
                 ->firstOrFail();
-
-            if ($habitacion->estado === 'Mantenimiento') {
-                throw ValidationException::withMessages([
-                    'habitacion_id' => 'Esta habitación se encuentra en mantenimiento.'
-                ]);
-            }
 
             if ($habitacion->capacidad < 1) {
                 throw ValidationException::withMessages([

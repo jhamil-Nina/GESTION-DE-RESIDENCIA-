@@ -41,23 +41,14 @@ class DashboardController extends Controller
             ->distinct()
             ->count('habitacion_id');
 
-        // HABITACIONES EN MANTENIMIENTO
-        $habitacionesMantenimiento = Habitacion::where(
-            'estado', 'Mantenimiento'
-        )->count();
-
-        // HABITACIONES LIBRES (EXCLUYENDO MANTENIMIENTO)
-        $habitacionesDisponibles = Habitacion::where(
-            'estado', '!=', 'Mantenimiento'
-        )
-            ->whereDoesntHave('registrosResidencia', function ($query) use ($hoy) {
-                $query->whereDate('fecha_ingreso', '<=', $hoy)
-                    ->where(function ($q) use ($hoy) {
-                        $q->whereNull('fecha_salida')
-                            ->orWhereDate('fecha_salida', '>', $hoy);
-                    });
-            })
-            ->count();
+        // HABITACIONES LIBRES
+        $habitacionesDisponibles = Habitacion::whereDoesntHave('registrosResidencia', function ($query) use ($hoy) {
+            $query->whereDate('fecha_ingreso', '<=', $hoy)
+                ->where(function ($q) use ($hoy) {
+                    $q->whereNull('fecha_salida')
+                        ->orWhereDate('fecha_salida', '>', $hoy);
+                });
+        })->count();
 
         $porcentajeOcupacion = $habitaciones > 0
             ? round(($habitacionesOcupadas / $habitaciones) * 100)
@@ -117,7 +108,6 @@ class DashboardController extends Controller
             'residentesActivos',
             'habitacionesOcupadas',
             'habitacionesDisponibles',
-            'habitacionesMantenimiento',
             'porcentajeOcupacion',
             'totalRecaudado',
             'deudaPendiente',

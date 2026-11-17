@@ -9,7 +9,8 @@ class Residencia extends Model
     protected $fillable = [
         'nombre',
         'direccion',
-        'capacidad'
+        'capacidad',
+        'max_habitaciones',
     ];
 
 

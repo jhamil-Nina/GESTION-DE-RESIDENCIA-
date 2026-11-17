@@ -57,7 +57,7 @@
             <div class="mb-6">
 
                 <label class="block font-semibold mb-2">
-                    Capacidad
+                    Capacidad máxima de residentes
                 </label>
 
                 <input
@@ -67,6 +67,12 @@
                     class="w-full border rounded-lg px-4 py-2">
 
             </div>
+
+            @error('capacidad')
+                <p class="text-red-600 mb-4">{{ $message }}</p>
+            @enderror
+
+            @include('residencias.max_habitaciones')
 
             <!-- BOTONES -->
             <div class="flex justify-end gap-3">
