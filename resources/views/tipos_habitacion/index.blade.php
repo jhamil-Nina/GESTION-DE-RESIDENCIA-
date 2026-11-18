@@ -2,9 +2,9 @@
 
 @section('content')
 <div class="max-w-4xl mx-auto bg-white rounded-xl shadow p-6">
-    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+    <div class="module-heading rounded-lg p-4 flex flex-wrap items-center justify-between gap-3 mb-6">
         <h2 class="text-2xl font-bold">Tipos de habitación</h2>
-        <a href="{{ route('tipos_habitacion.create') }}" class="bg-green-600 text-white px-4 py-2 rounded-lg">
+        <a href="{{ route('tipos_habitacion.create') }}" class="module-accent px-4 py-2 rounded-lg">
             Nuevo tipo
         </a>
     </div>

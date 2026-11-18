@@ -14,6 +14,7 @@ use App\Http\Controllers\ObservacionController; // controlador de observaciones
 use App\Http\Controllers\PagoController; // controlador de pagos
 use App\Http\Controllers\AntecedenteController; // controlador de antecedentes
 use App\Http\Controllers\DashboardController; // controlador del dashboard
+use App\Http\Controllers\ReporteController;
 
 // RUTAS WEB
 
@@ -58,6 +59,11 @@ Route::resource('antecedentes', AntecedenteController::class);
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+
+Route::get('/reportes/{tipo?}', ReporteController::class)
+    ->whereIn('tipo', ['danos', 'deudores'])
+    ->middleware(['auth', 'verified'])
+    ->name('reportes');
 
 //RUTAS PROTEGIDAS POR AUTENTICACION DEL LOGIN
 

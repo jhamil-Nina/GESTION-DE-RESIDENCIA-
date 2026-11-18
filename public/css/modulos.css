@@ -1,0 +1,66 @@
+.module-shell {
+    min-height: 100vh;
+    background: var(--emi-canvas);
+    color: var(--emi-navy);
+}
+
+.module-nav {
+    background: var(--emi-navy);
+    color: #fff;
+    border-bottom: 3px solid var(--emi-gold);
+}
+
+.module-nav-inner {
+    max-width: 80rem;
+    margin-inline: auto;
+    padding: .8rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem 1rem;
+}
+
+.module-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .75rem;
+    font-weight: 650;
+}
+
+.module-brand strong {
+    border-right: 1px solid var(--emi-gold);
+    padding-right: .75rem;
+    color: var(--emi-gold);
+    letter-spacing: .06em;
+    font-size: 1.25rem;
+}
+
+.module-nav-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; font-size: .9rem; }
+.module-nav a:hover, .module-nav button:hover { text-decoration: underline; }
+.module-nav button { color: #dce9f8; }
+.module-nav :focus-visible { outline: 2px solid var(--emi-gold); outline-offset: 4px; }
+
+.module-heading {
+    background: linear-gradient(105deg, var(--emi-navy), var(--emi-blue));
+    color: #fff;
+    box-shadow: inset 0 -3px var(--emi-gold);
+}
+
+.module-primary { background: var(--emi-blue); color: #fff; }
+.module-primary:hover { background: var(--emi-navy); color: #fff; }
+.module-accent { background: #f8e7ad; color: var(--emi-navy); }
+.module-accent:hover { background: var(--emi-gold); color: var(--emi-navy); }
+.module-secondary { background: #e8eff7; color: var(--emi-navy); }
+.module-secondary:hover { background: #dce7f4; color: var(--emi-navy); }
+.module-danger { background: #a32635; color: #fff; }
+.module-danger:hover { background: #821b28; color: #fff; }
+
+.module-content :focus-visible { outline: 2px solid var(--emi-focus); outline-offset: 2px; }
+.module-content th { background: #edf2f8; color: var(--emi-navy); }
+.module-content :is(th, td) { border-color: var(--emi-line); }
+.module-content input:read-only { background-color: #edf2f8; }
+
+@media (max-width: 480px) {
+    .module-nav-actions { width: 100%; }
+}

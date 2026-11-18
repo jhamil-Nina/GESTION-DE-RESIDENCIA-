@@ -7,7 +7,7 @@
 <div class="max-w-3xl mx-auto">
 
     <!-- HEADER -->
-    <div class="bg-gradient-to-r from-yellow-500 to-orange-500 p-6 rounded-t-xl text-white">
+    <div class="module-heading p-6 rounded-t-xl ">
 
         <h2 class="text-2xl font-bold">
             ✏ Editar Residencia
@@ -78,7 +78,7 @@
             <div class="flex justify-end gap-3">
 
                 <a href="{{ route('residencias.index') }}"
-                    class="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded-lg">
+                    class="module-secondary px-5 py-2 rounded-lg">
 
                     Cancelar
 
@@ -86,7 +86,7 @@
 
                 <button
                     type="submit"
-                    class="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded-lg">
+                    class="module-accent px-5 py-2 rounded-lg">
 
                     Actualizar
 

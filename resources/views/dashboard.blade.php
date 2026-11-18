@@ -1,374 +1,184 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestión de Residencias · EMI</title>
+    <link rel="stylesheet" href="{{ asset('css/paleta-emi.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+</head>
+<body>
+    @php
+        $modulos = [
+            ['dashboard', 'Resumen'],
+            ['residencias.index', 'Residencias'],
+            ['users.index', 'Residentes y usuarios'],
+            ['habitacions.index', 'Habitaciones'],
+            ['tipos_habitacion.index', 'Tipos de habitación'],
+            ['registro_residencias.index', 'Contratos'],
+            ['pagos.index', 'Pagos'],
+            ['observacions.index', 'Observaciones'],
+            ['antecedentes.index', 'Antecedentes'],
+            ['categoria_ocupacions.index', 'Categorías'],
+        ];
+        if (auth()->user()->rol === 'admin') {
+            $modulos[] = ['reportes', 'Reportes'];
+        }
+        $indicadores = [
+            ['Residentes activos', $residentesActivos, "$usuarios usuarios registrados", 'registro_residencias.index'],
+            ['Habitaciones', $habitaciones, "$habitacionesOcupadas ocupadas actualmente", 'habitacions.index'],
+            ['Total recaudado', 'Bs ' . number_format($totalRecaudado, 2), "$pagos pagos cobrados", 'pagos.index'],
+            ['Deuda pendiente', 'Bs ' . number_format($deudaPendiente, 2), "$cuotasPendientes mensualidades pendientes", 'pagos.index'],
+        ];
+    @endphp
 
-@extends('layouts.app')
-
-@section('content')
-
-<div class="max-w-7xl mx-auto px-4 pb-10 space-y-7">
-
-    {{-- BANNER --}}
-    <div class="relative h-64 md:h-72 rounded-3xl overflow-hidden shadow-lg">
-
-        <img
-            src="{{ asset('images/banner-residencia1.jpg') }}"
-            alt="Residencias Universitarias"
-            class="absolute inset-0 w-full h-full object-cover">
-
-        <div class="absolute inset-0 bg-gradient-to-r from-blue-950/90 via-blue-900/75 to-blue-800/40"></div>
-
-        <div class="relative z-10 h-full flex flex-col justify-center px-6 md:px-10 text-white">
-
-            <span class="text-blue-100 text-sm font-semibold uppercase tracking-widest mb-3">
-                Panel Administrativo
-            </span>
-
-            <h1 class="text-3xl md:text-4xl font-bold max-w-2xl">
-                Sistema de Gestión de Residencias
-            </h1>
-
-            <p class="mt-3 text-blue-100 text-sm md:text-base">
-                Control y seguimiento de la residencia universitaria
-            </p>
-
-            <div class="mt-5">
-                <span class="inline-block bg-white/20 border border-white/20 px-4 py-2 rounded-xl text-sm">
-                    Bienvenido, {{ Auth::user()->name }}
-                </span>
-            </div>
-
+    <aside class="panel-sidebar">
+        <a class="panel-brand" href="{{ route('dashboard') }}">
+            <strong>EMI</strong>
+            <span>Escuela Militar de Ingeniería<br>Unidad Académica Trópico</span>
+        </a>
+        <nav aria-label="Módulos administrativos">
+            @foreach($modulos as [$ruta, $nombre])
+                <a href="{{ route($ruta) }}" @if(request()->routeIs($ruta)) aria-current="page" @endif>{{ $nombre }}</a>
+            @endforeach
+        </nav>
+        <div class="panel-account">
+            <a href="{{ route('profile.edit') }}">{{ auth()->user()->name }}</a>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit">Cerrar sesión</button>
+            </form>
         </div>
-    </div>
+    </aside>
 
-    {{-- INDICADORES PRINCIPALES --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-
-        <a href="{{ route('registro_residencias.index') }}"
-           class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
-
-            <div class="flex items-center justify-between">
-                <span class="text-gray-500 text-sm">Residentes Activos</span>
-                <span class="bg-blue-100 text-blue-700 rounded-xl p-2">👥</span>
-            </div>
-
-            <p class="text-3xl font-bold text-blue-600 mt-3">
-                {{ $residentesActivos }}
-            </p>
-
-            <p class="text-xs text-gray-500 mt-2">
-                {{ $usuarios }} usuarios registrados
-            </p>
-        </a>
-
-        <a href="{{ route('habitacions.index') }}"
-           class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
-
-            <div class="flex items-center justify-between">
-                <span class="text-gray-500 text-sm">Habitaciones</span>
-                <span class="bg-green-100 text-green-700 rounded-xl p-2">🛏️</span>
-            </div>
-
-            <p class="text-3xl font-bold text-green-600 mt-3">
-                {{ $habitaciones }}
-            </p>
-
-            <p class="text-xs text-gray-500 mt-2">
-                {{ $habitacionesOcupadas }} ocupadas actualmente
-            </p>
-        </a>
-
-        <a href="{{ route('pagos.index') }}"
-           class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
-
-            <div class="flex items-center justify-between">
-                <span class="text-gray-500 text-sm">Total Recaudado</span>
-                <span class="bg-emerald-100 text-emerald-700 rounded-xl p-2">💰</span>
-            </div>
-
-            <p class="text-3xl font-bold text-emerald-600 mt-3">
-                Bs {{ number_format($totalRecaudado, 2) }}
-            </p>
-
-            <p class="text-xs text-gray-500 mt-2">
-                {{ $pagos }} pagos registrados
-            </p>
-        </a>
-
-        <a href="{{ route('pagos.index') }}"
-           class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
-
-            <div class="flex items-center justify-between">
-                <span class="text-gray-500 text-sm">Deuda Pendiente</span>
-                <span class="bg-red-100 text-red-700 rounded-xl p-2">📋</span>
-            </div>
-
-            <p class="text-3xl font-bold text-red-600 mt-3">
-                Bs {{ number_format($deudaPendiente, 2) }}
-            </p>
-
-            <p class="text-xs text-gray-500 mt-2">
-                {{ $cuotasPendientes }} mensualidades pendientes
-            </p>
-        </a>
-
-    </div>
-
-    {{-- OCUPACIÓN GENERAL --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-
-        <div class="flex items-center justify-between mb-5">
+    <main class="panel-main">
+        <header class="panel-header">
             <div>
-                <h2 class="text-lg font-bold text-gray-800">
-                    Ocupación General
-                </h2>
-                <p class="text-sm text-gray-500">
-                    Situación actual de las habitaciones
-                </p>
+                <h1>Gestión de Residencias</h1>
+                <p>Administración de las residencias universitarias</p>
             </div>
-
-            <span class="text-2xl font-bold text-blue-600">
-                {{ $porcentajeOcupacion }}%
-            </span>
-        </div>
-
-        <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-            <div
-                class="bg-gradient-to-r from-blue-500 to-indigo-600 h-4 rounded-full transition-all duration-500"
-                style="width: {{ min(100, max(0, $porcentajeOcupacion)) }}%;">
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-
-            <div class="bg-blue-50 rounded-xl p-4">
-                <p class="text-sm text-gray-600">Ocupadas</p>
-                <p class="text-2xl font-bold text-blue-700">
-                    {{ $habitacionesOcupadas }}
-                </p>
-            </div>
-
-            <div class="bg-green-50 rounded-xl p-4">
-                <p class="text-sm text-gray-600">Libres</p>
-                <p class="text-2xl font-bold text-green-700">
-                    {{ $habitacionesDisponibles }}
-                </p>
-            </div>
-
-        </div>
-
-        <a href="{{ route('habitacions.index') }}"
-           class="inline-block text-blue-600 hover:text-blue-800 text-sm font-semibold mt-5">
-            Ver habitaciones →
-        </a>
-    </div>
-
-    {{-- OBSERVACIONES Y REGISTROS --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-        {{-- OBSERVACIONES --}}
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-
-            <div class="flex items-center justify-between mb-5">
-                <h2 class="font-bold text-lg text-gray-800">
-                    Estado de Observaciones
-                </h2>
-
-                <a href="{{ route('observacions.index') }}"
-                   class="text-sm text-blue-600 hover:underline">
-                    Ver todas
-                </a>
-            </div>
-
-            <div class="space-y-3">
-
-                <div class="flex items-center justify-between bg-red-50 rounded-xl p-4">
-                    <span class="text-red-700 font-medium">
-                        Pendientes
-                    </span>
-                    <span class="font-bold text-red-700">
-                        {{ $observacionesPendientes }}
-                    </span>
-                </div>
-
-                <div class="flex items-center justify-between bg-amber-50 rounded-xl p-4">
-                    <span class="text-amber-700 font-medium">
-                        En reparación
-                    </span>
-                    <span class="font-bold text-amber-700">
-                        {{ $observacionesReparacion }}
-                    </span>
-                </div>
-
-                <div class="flex items-center justify-between bg-green-50 rounded-xl p-4">
-                    <span class="text-green-700 font-medium">
-                        Solucionadas
-                    </span>
-                    <span class="font-bold text-green-700">
-                        {{ $observacionesSolucionadas }}
-                    </span>
-                </div>
-
-            </div>
-        </div>
-
-        {{-- ÚLTIMOS INGRESOS --}}
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-
-            <div class="flex items-center justify-between mb-5">
-                <h2 class="font-bold text-lg text-gray-800">
-                    Últimos Ingresos
-                </h2>
-
-                <a href="{{ route('registro_residencias.index') }}"
-                   class="text-sm text-blue-600 hover:underline">
-                    Ver todos
-                </a>
-            </div>
-
-            <div class="divide-y divide-gray-100">
-
-                @forelse($ultimosIngresos as $registro)
-                    <div class="py-3 flex justify-between gap-3">
-
-                        <div>
-                            <p class="font-semibold text-gray-800">
-                                {{ $registro->user->name ?? 'Sin usuario' }}
-                            </p>
-
-                            <p class="text-sm text-gray-500">
-                                Habitación {{ $registro->habitacion->numero ?? 'N/D' }}
-                            </p>
-                        </div>
-
-                        <span class="text-xs text-gray-500 whitespace-nowrap">
-                            {{ \Carbon\Carbon::parse($registro->fecha_ingreso)->format('d/m/Y') }}
-                        </span>
+            <div class="panel-controls">
+                <form action="{{ route('dashboard') }}" method="GET">
+                    <label for="periodo">Período de recaudación</label>
+                    <div class="period-inputs">
+                        <select name="periodo" id="periodo">
+                            @foreach($periodos as $valor => $etiqueta)
+                                <option value="{{ $valor }}" @selected($periodo === $valor)>{{ $etiqueta }}</option>
+                            @endforeach
+                        </select>
+                        <button type="submit">Aplicar</button>
                     </div>
-                @empty
-                    <p class="text-gray-500 text-sm py-4">
-                        Todavía no existen ingresos registrados.
-                    </p>
-                @endforelse
-
+                </form>
+                @if(auth()->user()->rol === 'admin')
+                    <a class="primary-action" href="{{ route('reportes') }}">Ver reportes <span aria-hidden="true">→</span></a>
+                @endif
             </div>
+        </header>
+
+        <section class="panel-metrics" aria-label="Indicadores principales">
+            @foreach($indicadores as [$etiqueta, $valor, $detalle, $ruta])
+                <a class="metric" href="{{ route($ruta) }}">
+                    <span class="metric-label">{{ $etiqueta }}</span>
+                    <strong>{{ $valor }}</strong>
+                    <span class="metric-detail">{{ $detalle }}</span>
+                    @if($etiqueta === 'Total recaudado')
+                        <span class="metric-detail">{{ $desde ? $desde->format('d/m/Y') . ' – ' . \Illuminate\Support\Carbon::parse($hoy)->format('d/m/Y') : $periodos[$periodo] }}</span>
+                    @endif
+                </a>
+            @endforeach
+        </section>
+
+        <div class="panel-grid panel-grid-main">
+            <section class="panel-card">
+                <div class="card-heading">
+                    <h2>Últimos pagos</h2>
+                    <a href="{{ route('pagos.index') }}">Ver todos</a>
+                </div>
+                <div class="payment-table">
+                    <table>
+                        <thead>
+                            <tr><th scope="col">Residente</th><th scope="col">Fecha</th><th scope="col">Método</th><th scope="col">Monto</th><th scope="col">Detalle</th></tr>
+                        </thead>
+                        <tbody>
+                            @forelse($ultimosPagos as $pago)
+                                <tr>
+                                    <td>{{ $pago->registroResidencia->user->name ?? 'Sin residente' }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($pago->fecha_pago)->format('d/m/Y') }}</td>
+                                    <td>{{ $pago->metodo_pago }}</td>
+                                    <td>Bs {{ number_format($pago->monto, 2) }}</td>
+                                    <td><a href="{{ route('pagos.show', $pago->id) }}" aria-label="Ver pago {{ $pago->id }}">Ver</a></td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="5">No hay pagos cobrados en este período.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="panel-card">
+                <div class="card-heading">
+                    <h2>Ocupación general</h2>
+                    <strong>{{ $porcentajeOcupacion }}%</strong>
+                </div>
+                <progress aria-label="Ocupación de habitaciones" value="{{ $porcentajeOcupacion }}" max="100">{{ $porcentajeOcupacion }}%</progress>
+                <dl class="occupancy">
+                    <div><dt>Ocupadas</dt><dd>{{ $habitacionesOcupadas }}</dd></div>
+                    <div><dt>Libres</dt><dd>{{ $habitacionesDisponibles }}</dd></div>
+                </dl>
+                <a href="{{ route('habitacions.index') }}">Ver habitaciones →</a>
+            </section>
         </div>
 
-    </div>
+        <div class="panel-grid">
+            <section class="panel-card">
+                <div class="card-heading">
+                    <h2>Observaciones</h2>
+                    <a href="{{ route('observacions.index') }}">Ver todas</a>
+                </div>
+                <dl class="detail-list">
+                    <div><dt>Pendientes</dt><dd>{{ $observacionesPendientes }}</dd></div>
+                    <div><dt>En reparación</dt><dd>{{ $observacionesReparacion }}</dd></div>
+                    <div><dt>Solucionadas</dt><dd>{{ $observacionesSolucionadas }}</dd></div>
+                </dl>
+            </section>
 
-    {{-- ÚLTIMOS PAGOS --}}
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-
-        <div class="flex items-center justify-between mb-5">
-            <h2 class="font-bold text-lg text-gray-800">
-                Últimos Pagos
-            </h2>
-
-            <a href="{{ route('pagos.index') }}"
-               class="text-sm text-blue-600 hover:underline">
-                Ver todos
-            </a>
-        </div>
-
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-
-                <thead class="bg-gray-50 text-gray-600">
-                    <tr>
-                        <th class="text-left px-4 py-3">Residente</th>
-                        <th class="text-left px-4 py-3">Fecha</th>
-                        <th class="text-left px-4 py-3">Método</th>
-                        <th class="text-right px-4 py-3">Monto</th>
-                        <th class="text-center px-4 py-3">Detalle</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @forelse($ultimosPagos as $pago)
-                        <tr class="border-t border-gray-100">
-
-                            <td class="px-4 py-3">
-                                {{ $pago->registroResidencia->user->name ?? 'Sin residente' }}
-                            </td>
-
-                            <td class="px-4 py-3">
-                                {{ \Carbon\Carbon::parse($pago->fecha_pago)->format('d/m/Y') }}
-                            </td>
-
-                            <td class="px-4 py-3">
-                                {{ $pago->metodo_pago }}
-                            </td>
-
-                            <td class="px-4 py-3 text-right font-semibold text-green-600">
-                                Bs {{ number_format($pago->monto, 2) }}
-                            </td>
-
-                            <td class="px-4 py-3 text-center">
-                                <a href="{{ route('pagos.show', $pago->id) }}"
-                                   class="text-blue-600 hover:underline">
-                                    Ver
-                                </a>
-                            </td>
-
-                        </tr>
+            <section class="panel-card">
+                <div class="card-heading">
+                    <h2>Últimos ingresos</h2>
+                    <a href="{{ route('registro_residencias.index') }}">Ver todos</a>
+                </div>
+                <ul class="detail-list">
+                    @forelse($ultimosIngresos as $registro)
+                        <li>
+                            <div>
+                                <strong>{{ $registro->user->name ?? 'Sin usuario' }}</strong>
+                                <span>Habitación {{ $registro->habitacion->numero ?? 'N/D' }}</span>
+                            </div>
+                            <time datetime="{{ $registro->fecha_ingreso->toDateString() }}">{{ $registro->fecha_ingreso->format('d/m/Y') }}</time>
+                        </li>
                     @empty
-                        <tr>
-                            <td colspan="5" class="text-center py-6 text-gray-500">
-                                Todavía no hay pagos registrados.
-                            </td>
-                        </tr>
+                        <li>Todavía no existen ingresos registrados.</li>
                     @endforelse
-                </tbody>
-
-            </table>
-        </div>
-    </div>
-
-    {{-- ACCIONES RÁPIDAS --}}
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-
-        <div class="flex items-center justify-between mb-5">
-            <h2 class="font-bold text-lg text-gray-800">
-                Acciones Rápidas
-            </h2>
-
-            <span class="text-sm text-gray-500">
-                Accesos administrativos
-            </span>
+                </ul>
+            </section>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-
-            <a href="{{ route('users.create') }}"
-               class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-4 rounded-xl text-center font-medium transition">
-                + Nuevo Residente
-            </a>
-
-            <a href="{{ route('registro_residencias.create') }}"
-               class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-4 rounded-xl text-center font-medium transition">
-                + Registrar Residencia
-            </a>
-
-            <a href="{{ route('pagos.create') }}"
-               class="bg-green-600 hover:bg-green-700 text-white px-4 py-4 rounded-xl text-center font-medium transition">
-                + Registrar Pago
-            </a>
-
-            <a href="{{ route('habitacions.create') }}"
-               class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-4 rounded-xl text-center font-medium transition">
-                + Nueva Habitación
-            </a>
-
-            <a href="{{ route('observacions.create') }}"
-               class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-4 rounded-xl text-center font-medium transition">
-                + Nueva Observación
-            </a>
-
-            <a href="{{ route('antecedentes.create') }}"
-               class="bg-red-600 hover:bg-red-700 text-white px-4 py-4 rounded-xl text-center font-medium transition">
-                + Registrar Antecedente
-            </a>
-
-        </div>
-    </div>
-
-</div>
-
-@endsection
+        <section class="panel-card">
+            <div class="card-heading"><h2>Acciones rápidas</h2></div>
+            <div class="quick-actions">
+                @foreach([
+                    ['users.create', 'Nuevo residente'],
+                    ['registro_residencias.create', 'Registrar contrato'],
+                    ['pagos.create', 'Registrar pago'],
+                    ['habitacions.create', 'Nueva habitación'],
+                    ['observacions.create', 'Nueva observación'],
+                    ['antecedentes.create', 'Registrar antecedente'],
+                ] as [$ruta, $nombre])
+                    <a href="{{ route($ruta) }}"><span aria-hidden="true">+</span> {{ $nombre }}</a>
+                @endforeach
+            </div>
+        </section>
+    </main>
+</body>
+</html>

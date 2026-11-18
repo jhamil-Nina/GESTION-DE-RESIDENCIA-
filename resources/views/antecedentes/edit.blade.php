@@ -5,7 +5,7 @@
 <div class="max-w-3xl mx-auto">
 
     {{-- HEADER --}}
-    <div class="bg-gradient-to-r from-yellow-500 to-orange-500 p-6 rounded-t-xl text-white">
+    <div class="module-heading p-6 rounded-t-xl ">
 
         <h2 class="text-2xl font-bold">
             ✏ Editar Antecedente
@@ -34,7 +34,7 @@
 
                 <select
                     name="user_id"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 ">
 
                     @foreach($users as $user)
 
@@ -66,7 +66,7 @@
                 <textarea
                     name="descripcion"
                     rows="4"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500">{{ old('descripcion', $antecedente->descripcion) }}</textarea>
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 ">{{ old('descripcion', $antecedente->descripcion) }}</textarea>
 
                 @error('descripcion')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -85,7 +85,7 @@
                     type="date"
                     name="fecha"
                     value="{{ old('fecha', $antecedente->fecha) }}"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 ">
 
                 @error('fecha')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -97,7 +97,7 @@
             <div class="flex justify-end gap-3">
 
                 <a href="{{ route('antecedentes.index') }}"
-                    class="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded-lg">
+                    class="module-secondary px-5 py-2 rounded-lg">
 
                     Cancelar
 
@@ -105,7 +105,7 @@
 
                 <button
                     type="submit"
-                    class="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded-lg">
+                    class="module-accent px-5 py-2 rounded-lg">
 
                     Actualizar
 

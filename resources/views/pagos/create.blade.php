@@ -4,7 +4,7 @@
 
 <div class="max-w-3xl mx-auto px-4">
 
-    <div class="bg-gradient-to-r from-green-500 to-emerald-600 p-6 rounded-t-xl text-white">
+    <div class="module-heading p-6 rounded-t-xl ">
         <h2 class="text-2xl font-bold">➕ Registrar Pago</h2>
         <p class="text-sm opacity-90 mt-1">
             Seleccione la residencia, el contrato y las mensualidades
@@ -42,7 +42,7 @@
                     id="residencia_id"
                     name="residencia_id"
                     required
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500">
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 ">
 
                     <option value="">Seleccione una residencia</option>
 
@@ -205,14 +205,14 @@
 
             <div class="flex justify-end gap-3">
                 <a href="{{ route('pagos.index') }}"
-                   class="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded-lg">
+                   class="module-secondary px-5 py-2 rounded-lg">
                     Cancelar
                 </a>
 
                 <button type="submit"
                         id="btnGuardar"
                         disabled
-                        class="bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-5 py-2 rounded-lg">
+                        class="module-primary disabled:opacity-50 disabled:cursor-not-allowed px-5 py-2 rounded-lg">
                     Registrar Pago
                 </button>
             </div>

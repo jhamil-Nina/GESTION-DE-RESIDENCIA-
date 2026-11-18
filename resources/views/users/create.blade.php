@@ -4,7 +4,7 @@
 
 <div class="max-w-3xl mx-auto">
 
-    <div class="bg-gradient-to-r from-green-500 to-emerald-600 p-6 rounded-t-xl text-white">
+    <div class="module-heading p-6 rounded-t-xl ">
 
         <h2 class="text-2xl font-bold">
             ➕ Nuevo Usuario
@@ -165,7 +165,7 @@
             <div class="flex justify-end gap-3">
 
                 <a href="{{ route('users.index') }}"
-                    class="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded-lg">
+                    class="module-secondary px-5 py-2 rounded-lg">
 
                     Cancelar
 
@@ -173,7 +173,7 @@
 
                 <button
                     type="submit"
-                    class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg">
+                    class="module-primary px-5 py-2 rounded-lg">
 
                     Guardar
 

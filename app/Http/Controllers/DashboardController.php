@@ -9,11 +9,11 @@ use App\Models\Pago;
 use App\Models\Mensualidad;
 use App\Models\Observacion;
 use App\Models\Antecedente;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $hoy = today()->toDateString();
 
@@ -21,7 +21,6 @@ class DashboardController extends Controller
         $usuarios = User::count();
         $habitaciones = Habitacion::count();
         $registros = RegistroResidencia::count();
-        $pagos = Pago::count();
 
         // CONTRATOS VIGENTES
         $contratosActivos = RegistroResidencia::whereDate(
@@ -55,8 +54,23 @@ class DashboardController extends Controller
             : 0;
 
         // FINANZAS
-        $totalRecaudado = Pago::where('estado', 'Pagado')
-            ->sum('monto');
+        $periodos = [
+            'mes' => 'Último mes',
+            'semestre' => 'Últimos 6 meses',
+            'anio' => 'Últimos 12 meses',
+            'historial' => 'Todo el historial',
+        ];
+        $periodo = $request->validate(['periodo' => 'sometimes|in:mes,semestre,anio,historial'])['periodo'] ?? 'mes';
+        $desde = match ($periodo) {
+            'mes' => today()->subMonthNoOverflow(),
+            'semestre' => today()->subMonthsNoOverflow(6),
+            'anio' => today()->subYearNoOverflow(),
+            default => null,
+        };
+        $cobros = Pago::where('estado', 'Pagado')
+            ->when($desde, fn ($query) => $query->whereBetween('fecha_pago', [$desde->toDateString(), $hoy]));
+        $totalRecaudado = (clone $cobros)->sum('monto');
+        $pagos = (clone $cobros)->count();
 
         $deudaPendiente = Mensualidad::where(
             'estado', 'Pendiente'
@@ -92,7 +106,7 @@ class DashboardController extends Controller
             ->get();
 
         // ÚLTIMOS PAGOS
-        $ultimosPagos = Pago::with([
+        $ultimosPagos = $cobros->with([
             'registroResidencia.user'
         ])
             ->orderByDesc('fecha_pago')
@@ -105,6 +119,10 @@ class DashboardController extends Controller
             'habitaciones',
             'registros',
             'pagos',
+            'periodos',
+            'periodo',
+            'desde',
+            'hoy',
             'residentesActivos',
             'habitacionesOcupadas',
             'habitacionesDisponibles',

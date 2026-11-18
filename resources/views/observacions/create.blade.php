@@ -5,7 +5,7 @@
 <div class="max-w-3xl mx-auto px-4">
 
     {{-- HEADER --}}
-    <div class="bg-gradient-to-r from-green-500 to-emerald-600 p-6 rounded-t-xl text-white">
+    <div class="module-heading p-6 rounded-t-xl ">
 
         <h2 class="text-2xl font-bold">
             ➕ Nueva Observación
@@ -46,7 +46,7 @@
                 <select
                     id="residencia_id"
                     required
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 ">
 
                     <option value="">
                         Seleccione una residencia
@@ -77,7 +77,7 @@
                     name="habitacion_id"
                     required
                     disabled
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100">
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2  disabled:bg-gray-100">
 
                     <option value="">
                         Primero seleccione una residencia
@@ -106,7 +106,7 @@
                     rows="4"
                     required
                     placeholder="Ejemplo: La cortina de la ventana está rota..."
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">{{ old('descripcion') }}</textarea>
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 ">{{ old('descripcion') }}</textarea>
 
             </div>
 
@@ -149,13 +149,13 @@
             <div class="flex justify-end gap-3">
 
                 <a href="{{ route('observacions.index') }}"
-                   class="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded-lg transition">
+                   class="module-secondary px-5 py-2 rounded-lg transition">
                     Cancelar
                 </a>
 
                 <button
                     type="submit"
-                    class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg transition">
+                    class="module-primary px-5 py-2 rounded-lg transition">
                     Guardar Observación
                 </button>
 

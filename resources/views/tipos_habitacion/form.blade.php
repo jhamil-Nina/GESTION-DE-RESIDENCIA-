@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="max-w-3xl mx-auto bg-white rounded-xl shadow p-6">
-    <h2 class="text-2xl font-bold mb-6">{{ $tipo->exists ? 'Editar tipo de habitación' : 'Nuevo tipo de habitación' }}</h2>
+    <h2 class="module-heading rounded-lg p-4 text-2xl font-bold mb-6">{{ $tipo->exists ? 'Editar tipo de habitación' : 'Nuevo tipo de habitación' }}</h2>
 
     <form method="POST" action="{{ $tipo->exists ? route('tipos_habitacion.update', $tipo) : route('tipos_habitacion.store') }}">
         @csrf
@@ -30,7 +30,7 @@
 
         <div class="flex justify-end items-center gap-3">
             <a href="{{ route('tipos_habitacion.index') }}" class="text-gray-700">Cancelar</a>
-            <button type="submit" class="bg-green-600 text-white px-5 py-2 rounded-lg">Guardar</button>
+            <button type="submit" class="module-primary px-5 py-2 rounded-lg">Guardar</button>
         </div>
     </form>
 </div>

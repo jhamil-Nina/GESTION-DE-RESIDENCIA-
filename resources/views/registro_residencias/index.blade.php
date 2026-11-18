@@ -4,7 +4,7 @@
 
 <div class="max-w-7xl mx-auto">
 
-    <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 rounded-t-xl text-white">
+    <div class="module-heading p-6 rounded-t-xl ">
 
         <h2 class="text-2xl font-bold">
             🏠 Registros de Residencia
@@ -42,7 +42,7 @@
 
                 <button
                     type="submit"
-                    class="bg-indigo-500 hover:bg-indigo-600 text-white px-5 py-2 rounded-lg">
+                    class="module-secondary px-5 py-2 rounded-lg">
 
                     Buscar
 
@@ -52,7 +52,7 @@
 
 
             <a href="{{ route('registro_residencias.create') }}"
-                class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg shadow">
+                class="module-primary px-5 py-2 rounded-lg shadow">
 
                 + Nuevo Registro
 
@@ -114,8 +114,8 @@
 
                             {{-- VER --}}
                             <a href="{{ route('registro_residencias.show', $registro->id) }}"
-                                class="flex items-center gap-1 bg-blue-500 hover:bg-blue-600 
-                   text-white px-4 py-2 rounded-lg shadow-md 
+                                class="flex items-center gap-1 module-secondary
+                   px-4 py-2 rounded-lg shadow-md
                    transition duration-200 text-sm font-medium">
 
                                  Ver
@@ -123,8 +123,8 @@
 
                             {{-- EDITAR --}}
                             <a href="{{ route('registro_residencias.edit', $registro->id) }}"
-                                class="flex items-center gap-1 bg-yellow-500 hover:bg-yellow-600 
-                                text-white px-4 py-2 rounded-lg shadow-md 
+                                class="flex items-center gap-1 module-accent
+                                px-4 py-2 rounded-lg shadow-md
                                 transition duration-200 text-sm font-medium">
 
                                  Editar
@@ -141,8 +141,8 @@
                                 <button
                                     type="submit"
                                     onclick="return confirm('¿Eliminar registro?')"
-                                    class="flex items-center gap-1 bg-red-500 hover:bg-red-600 
-                                    text-white px-4 py-2 rounded-lg shadow-md 
+                                    class="flex items-center gap-1 module-danger
+                                    px-4 py-2 rounded-lg shadow-md
                                     transition duration-200 text-sm font-medium">
 
                                      Eliminar

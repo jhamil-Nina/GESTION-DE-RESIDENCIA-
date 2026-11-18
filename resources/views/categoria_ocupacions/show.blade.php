@@ -5,7 +5,7 @@
 <div class="max-w-3xl mx-auto">
 
     {{-- HEADER --}}
-    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 rounded-t-xl text-white">
+    <div class="module-heading p-6 rounded-t-xl ">
 
         <h2 class="text-2xl font-bold">
             👁 Detalle de Categoría
@@ -52,7 +52,7 @@
 
             <a
                 href="{{ route('categoria_ocupacions.index') }}"
-                class="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded-lg">
+                class="module-secondary px-5 py-2 rounded-lg">
 
                 Volver
 
@@ -60,7 +60,7 @@
 
             <a
                 href="{{ route('categoria_ocupacions.edit', $categoria->id) }}"
-                class="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded-lg">
+                class="module-accent px-5 py-2 rounded-lg">
 
                 Editar
 

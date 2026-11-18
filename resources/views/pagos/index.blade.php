@@ -5,7 +5,7 @@
 
 <div class="max-w-7xl mx-auto">
 
-    <div class="bg-gradient-to-r from-indigo-600 to-blue-600 p-6 rounded-t-xl text-white">
+    <div class="module-heading p-6 rounded-t-xl ">
         <h2 class="text-2xl font-bold">💰 Lista de Pagos</h2>
         <p class="text-sm opacity-90">
             Control de mensualidades, cobros y deudas
@@ -73,7 +73,7 @@
                        class="w-full border rounded-lg px-4 py-2">
 
                 <button type="submit"
-                        class="bg-indigo-500 hover:bg-indigo-600 text-white px-5 py-2 rounded-lg">
+                        class="module-secondary px-5 py-2 rounded-lg">
                     Buscar
                 </button>
             </form>
@@ -82,8 +82,8 @@
             <a href="{{ route('pagos.create') }}"
             class="inline-flex items-center justify-center gap-2
                     self-start md:self-center
-                    bg-green-600 hover:bg-green-700
-                    text-white font-semibold
+                    module-primary
+                    font-semibold
                     px-5 py-2.5 rounded-lg
                     shadow-sm hover:shadow-md
                     transition-all duration-200
@@ -184,12 +184,12 @@
                             <td class="px-4 py-3 text-center">
                                 @if($ultimoPago)
                                     <a href="{{ route('pagos.show', $ultimoPago->id) }}"
-                                       class="inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                                       class="inline-block module-secondary px-4 py-2 rounded-lg">
                                         Ver último pago
                                     </a>
                                 @elseif($deuda > 0)
                                     <a href="{{ route('pagos.create') }}"
-                                       class="inline-block bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
+                                       class="inline-block module-primary px-4 py-2 rounded-lg">
                                         Cobrar
                                     </a>
                                 @else

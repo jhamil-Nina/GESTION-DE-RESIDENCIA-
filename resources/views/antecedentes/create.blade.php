@@ -5,7 +5,7 @@
 <div class="max-w-3xl mx-auto">
 
     {{-- HEADER --}}
-    <div class="bg-gradient-to-r from-green-500 to-emerald-600 p-6 rounded-t-xl text-white">
+    <div class="module-heading p-6 rounded-t-xl ">
 
         <h2 class="text-2xl font-bold">
             ➕ Nuevo Antecedente
@@ -33,7 +33,7 @@
 
                 <select
                     name="user_id"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 ">
 
                     <option value="">
                         Seleccione un usuario
@@ -69,7 +69,7 @@
                 <textarea
                     name="descripcion"
                     rows="4"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">{{ old('descripcion') }}</textarea>
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 ">{{ old('descripcion') }}</textarea>
 
                 @error('descripcion')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -88,7 +88,7 @@
                     type="date"
                     name="fecha"
                     value="{{ old('fecha') }}"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 ">
 
                 @error('fecha')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -100,7 +100,7 @@
             <div class="flex justify-end gap-3">
 
                 <a href="{{ route('antecedentes.index') }}"
-                    class="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded-lg">
+                    class="module-secondary px-5 py-2 rounded-lg">
 
                     Cancelar
 
@@ -108,7 +108,7 @@
 
                 <button
                     type="submit"
-                    class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg">
+                    class="module-primary px-5 py-2 rounded-lg">
 
                     Guardar
 

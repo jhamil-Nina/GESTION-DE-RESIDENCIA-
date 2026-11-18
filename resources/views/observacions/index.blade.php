@@ -6,7 +6,7 @@
 <div class="max-w-7xl mx-auto px-4">
 
     {{-- HEADER --}}
-    <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-6 rounded-t-xl text-white">
+    <div class="module-heading p-6 rounded-t-xl ">
 
         <h2 class="text-2xl font-bold">
             📋 Gestión de Observaciones
@@ -39,18 +39,18 @@
                     name="buscar"
                     value="{{ $buscar }}"
                     placeholder="Buscar habitación o daño..."
-                    class="w-full md:w-72 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-purple-500">
+                    class="w-full md:w-72 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 ">
 
                 <button
                     type="submit"
-                    class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
+                    class="module-secondary px-4 py-2 rounded-lg">
                     Buscar
                 </button>
 
             </form>
 
             <a href="{{ route('observacions.create') }}"
-            class="inline-flex items-center justify-center self-start md:self-auto bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow text-sm font-medium whitespace-nowrap">
+            class="inline-flex items-center justify-center self-start md:self-auto module-primary px-4 py-2 rounded-lg shadow text-sm font-medium whitespace-nowrap">
 
                 + Nueva Observación
 
@@ -129,12 +129,12 @@
                                 <div class="flex flex-wrap items-center justify-center gap-2">
 
                                     <a href="{{ route('observacions.show', $observacion) }}"
-                                       class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium">
+                                       class="module-secondary px-3 py-2 rounded-lg text-sm font-medium">
                                         Ver
                                     </a>
 
                                     <a href="{{ route('observacions.edit', $observacion) }}"
-                                       class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-lg text-sm font-medium">
+                                       class="module-accent px-3 py-2 rounded-lg text-sm font-medium">
                                         Editar
                                     </a>
 
@@ -147,7 +147,7 @@
                                         <button
                                             type="submit"
                                             onclick="return confirm('¿Está seguro de eliminar esta observación? Se perderá también su historial de residentes asociados.')"
-                                            class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-sm font-medium">
+                                            class="module-danger px-3 py-2 rounded-lg text-sm font-medium">
                                             Eliminar
                                         </button>
 

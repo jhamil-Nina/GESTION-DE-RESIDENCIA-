@@ -7,7 +7,7 @@
 <div class="max-w-7xl mx-auto">
 
     <!-- HEADER -->
-    <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-6 rounded-t-xl text-white">
+    <div class="module-heading p-6 rounded-t-xl ">
 
         <h2 class="text-2xl font-bold flex items-center gap-2">
             🚪 Lista de Habitaciones
@@ -45,11 +45,11 @@
                     name="buscar"
                     value="{{ $buscar ?? '' }}"
                     placeholder="Buscar habitación..."
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 ">
 
                 <button
                     type="submit"
-                    class="bg-indigo-500 hover:bg-indigo-600 text-white px-5 py-2 rounded-lg">
+                    class="module-secondary px-5 py-2 rounded-lg">
                     Buscar
                 </button>
 
@@ -61,7 +61,7 @@
             </a>
 
             <a href="{{ route('habitacions.create') }}"
-                class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg shadow">
+                class="module-primary px-5 py-2 rounded-lg shadow">
 
                 + Nueva Habitación
 
@@ -81,7 +81,7 @@
                      {{ $residencia->nombre }}
                 </h3>
 
-                <span class="bg-indigo-600 text-white px-3 py-1 rounded-full text-sm">
+                <span class="module-primary px-3 py-1 rounded-full text-sm">
                     {{ $residencia->habitacions->count() }} habitaciones
                 </span>
 
@@ -149,12 +149,12 @@
                             <div class="flex flex-wrap justify-center items-center gap-2">
 
                                 <a href="{{ route('habitacions.show', $habitacion->id) }}"
-                                    class="w-24 h-10 flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white rounded-lg">
+                                    class="w-24 h-10 flex items-center justify-center module-secondary rounded-lg">
                                     Ver
                                 </a>
 
                                 <a href="{{ route('habitacions.edit', $habitacion->id) }}"
-                                    class="w-24 h-10 flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg">
+                                    class="w-24 h-10 flex items-center justify-center module-accent rounded-lg">
                                     Editar
                                 </a>
 
@@ -168,7 +168,7 @@
                                     <button
                                         type="submit"
                                         onclick="return confirm('¿Seguro que deseas eliminar esta habitación?')"
-                                        class="w-24 h-10 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-lg">
+                                        class="w-24 h-10 flex items-center justify-center module-danger rounded-lg">
 
                                         Eliminar
 

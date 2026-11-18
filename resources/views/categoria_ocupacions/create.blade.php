@@ -5,7 +5,7 @@
 <div class="max-w-3xl mx-auto">
 
     {{-- HEADER --}}
-    <div class="bg-gradient-to-r from-green-500 to-emerald-600 p-6 rounded-t-xl text-white">
+    <div class="module-heading p-6 rounded-t-xl ">
 
         <h2 class="text-2xl font-bold">
             ➕ Nueva Categoría de Ocupación
@@ -52,7 +52,7 @@
                     type="text"
                     name="nombre"
                     value="{{ old('nombre') }}"
-                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 "
                     required>
 
             </div>
@@ -61,7 +61,7 @@
 
                 <a
                     href="{{ route('categoria_ocupacions.index') }}"
-                    class="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded-lg">
+                    class="module-secondary px-5 py-2 rounded-lg">
 
                     Cancelar
 
@@ -69,7 +69,7 @@
 
                 <button
                     type="submit"
-                    class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg">
+                    class="module-primary px-5 py-2 rounded-lg">
 
                     Guardar
 
