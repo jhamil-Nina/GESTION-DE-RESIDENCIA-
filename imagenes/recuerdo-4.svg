@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 600">
+  <defs>
+    <linearGradient id="dawn" x2="0" y2="1">
+      <stop stop-color="#b9a2c6"/>
+      <stop offset=".52" stop-color="#f1b6a1"/>
+      <stop offset="1" stop-color="#ffe2b5"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="600" fill="#473e52"/>
+  <rect x="34" y="34" width="412" height="532" rx="7" fill="url(#dawn)"/>
+  <circle cx="242" cy="300" r="72" fill="#fff0c8" opacity=".9"/>
+  <path d="M34 367q96-82 205-4 104-76 207 8v195H34z" fill="#8a718c" opacity=".78"/>
+  <path d="M34 431q89-60 175-3 116-67 237-4v142H34z" fill="#50636c"/>
+  <path d="M34 490q110-38 201 0t211 0v76H34z" fill="#334c50"/>
+  <g fill="#f5d6b3" opacity=".8">
+    <circle cx="125" cy="448" r="4"/><circle cx="159" cy="473" r="3"/>
+    <circle cx="329" cy="455" r="4"/><circle cx="374" cy="482" r="3"/>
+    <circle cx="227" cy="511" r="4"/><circle cx="270" cy="486" r="3"/>
+  </g>
+  <path d="M22 572h436v15H22z" fill="#d6b3a5"/>
+  <path d="M22 22h436v12H22zM22 22v565h12V22m412 0v565h12V22" fill="#d6b3a5" opacity=".7"/>
+  <path d="M192 344q49-50 98 0" fill="none" stroke="#fff1d5" stroke-width="3" opacity=".65"/>
+</svg>

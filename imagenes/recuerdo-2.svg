@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 600">
+  <defs>
+    <linearGradient id="night" x2="0" y2="1">
+      <stop stop-color="#3d3557"/>
+      <stop offset=".56" stop-color="#92718b"/>
+      <stop offset="1" stop-color="#e6a18a"/>
+    </linearGradient>
+    <linearGradient id="hill" x2="0" y2="1">
+      <stop stop-color="#47536b"/>
+      <stop offset="1" stop-color="#293646"/>
+    </linearGradient>
+  </defs>
+  <rect width="480" height="600" fill="url(#night)"/>
+  <circle cx="365" cy="157" r="52" fill="#f3d9b7" opacity=".9"/>
+  <circle cx="386" cy="140" r="49" fill="#746887"/>
+  <g fill="#fff0d6">
+    <circle cx="67" cy="104" r="3"/><circle cx="149" cy="173" r="2.5"/>
+    <circle cx="241" cy="88" r="2"/><circle cx="282" cy="202" r="3"/>
+    <circle cx="98" cy="248" r="2"/><circle cx="428" cy="267" r="2.5"/>
+  </g>
+  <path d="M0 356q97-100 187-17 63-89 130-37 86-98 163-4v302H0z" fill="#596078"/>
+  <path d="M0 433q111-91 206-22 87-70 167-27 53-34 107-1v217H0z" fill="url(#hill)"/>
+  <path d="M-20 518q85-70 170-9 85-80 169-10 76-63 181-6v127H-20z" fill="#253540"/>
+  <g fill="#eaa891" opacity=".9">
+    <circle cx="90" cy="445" r="5"/><circle cx="122" cy="471" r="4"/>
+    <circle cx="365" cy="436" r="5"/><circle cx="401" cy="465" r="4"/>
+  </g>
+</svg>
